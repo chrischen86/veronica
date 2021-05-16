@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConquestModule } from './conquest/conquest.module';
+import { SocketioModule } from './socketio/socketio.module';
 
 @Module({
-  imports: [],
+  imports: [ConquestModule, SocketioModule],
   controllers: [AppController],
   providers: [AppService],
 })
