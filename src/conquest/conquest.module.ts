@@ -9,6 +9,7 @@ import { EventHandlers } from './events';
 
 @Module({
   imports: [CqrsModule],
+  exports: [ConquestService],
   controllers: [ConquestController],
   providers: [
     ConquestService,
