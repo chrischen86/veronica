@@ -4,6 +4,7 @@ import SetupConquestCommand from './commands/setup-conquest.command';
 import SetupPhaseCommand from './commands/setup-phase.command';
 import { Conquest } from './interfaces/conquest.interface';
 import { GetConquestQuery } from './queries/get-conquest.query';
+import { ListConquestQuery } from './queries/list-conquest.query';
 
 @Injectable()
 export class ConquestService {
@@ -12,8 +13,12 @@ export class ConquestService {
     private readonly queryBus: QueryBus,
   ) {}
 
-  async getConquest(): Promise<Conquest> {
-    return this.queryBus.execute(new GetConquestQuery());
+  async findAllConquest(): Promise<Conquest[]> {
+    return this.queryBus.execute(new ListConquestQuery());
+  }
+
+  async findOneConquest(conquestId: string): Promise<Conquest> {
+    return this.queryBus.execute(new GetConquestQuery(conquestId));
   }
 
   async createConquest(allianceId: string, to: Date, from: Date) {
@@ -23,7 +28,7 @@ export class ConquestService {
   }
 
   async setupPhase(phase: number) {
-    const conquest = await this.queryBus.execute(new GetConquestQuery());
+    const conquest = await this.queryBus.execute(new GetConquestQuery('1'));
     if (conquest === null) {
       await this.commandBus.execute(
         new SetupConquestCommand(

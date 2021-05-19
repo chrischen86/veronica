@@ -8,6 +8,7 @@ export class GetConquestHandler implements IQueryHandler<GetConquestQuery> {
 
   async execute(query: GetConquestQuery) {
     console.log('Async GetConquestQuery...');
-    return this.repository.getConquest();
+    const { id } = query;
+    return this.repository.findOneById(id);
   }
 }

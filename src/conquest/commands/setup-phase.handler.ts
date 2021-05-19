@@ -21,6 +21,6 @@ export class SetupPhaseHandler implements ICommandHandler<SetupPhaseCommand> {
       number: phaseNumber,
       zones: [],
     };
-    await this.repository.savePhase(phase);
+    await this.repository.createPhase('1', phase);
   }
 }

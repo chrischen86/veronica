@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ConquestService } from './conquest.service';
 import { ConquestController } from './conquest.controller';
-import { ConquestRepository } from './repository/conquest.repository';
+import { ConquestRepositoryMemoryAdapter } from './repository/conquest-repository-memory.adapter';
 import { QueryHandlers } from './queries';
 import { CommandHandlers } from './commands';
 import { EventHandlers } from './events';
+import { ConquestRepository } from './repository/conquest.repository';
 
 @Module({
   imports: [CqrsModule],
@@ -13,7 +14,10 @@ import { EventHandlers } from './events';
   controllers: [ConquestController],
   providers: [
     ConquestService,
-    ConquestRepository,
+    {
+      provide: ConquestRepository,
+      useClass: ConquestRepositoryMemoryAdapter,
+    },
     ...QueryHandlers,
     ...CommandHandlers,
     ...EventHandlers,

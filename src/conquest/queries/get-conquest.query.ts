@@ -1,1 +1,3 @@
-export class GetConquestQuery {}
+export class GetConquestQuery {
+  constructor(public id: string) {}
+}

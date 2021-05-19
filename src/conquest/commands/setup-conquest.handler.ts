@@ -15,18 +15,18 @@ export class SetupConquestHandler
   ) {}
 
   async execute(command: SetupConquestCommand) {
-    console.log('SetupConquestCommand...');
-    const { to, from } = command;
+    console.log('CreateConquestCommand...');
+    const { to, from, allianceId } = command;
 
     const conquest: Conquest = {
       id: uuidv4(),
-      allianceId: 'alphaflight',
+      allianceId,
       to,
       from,
       phases: [],
     };
 
-    await this.repository.saveConquest(conquest);
+    await this.repository.create(conquest);
     this.eventBus.publish(new ConquestCreatedEvent(conquest.id));
   }
 }

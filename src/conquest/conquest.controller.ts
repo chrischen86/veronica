@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ConquestService } from './conquest.service';
-import { Conquest } from './interfaces/conquest.interface';
 import { CreateConquestDto } from './interfaces/create-conquest-dto.interface';
 
 @Controller('conquest')
@@ -14,7 +13,13 @@ export class ConquestController {
   }
 
   @Get()
-  async findAll(): Promise<Conquest> {
-    return this.service.getConquest();
+  async findAll() {
+    console.log('tset');
+    return this.service.findAllConquest();
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.service.findOneConquest(id);
   }
 }
