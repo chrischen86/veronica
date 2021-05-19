@@ -8,6 +8,7 @@ export interface Conquest {
 
 export interface Phase {
   id: string;
+  conquestId: string;
   number: number;
   to: Date;
   from: Date;

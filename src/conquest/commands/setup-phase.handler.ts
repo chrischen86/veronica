@@ -1,26 +1,28 @@
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import { v4 as uuidv4 } from 'uuid';
 import { Phase } from '../interfaces/conquest.interface';
-import { ConquestRepository } from '../repository/conquest.repository';
+import { PhaseRepository } from '../repository/phase.repository';
 import SetupPhaseCommand from './setup-phase.command';
 
 @CommandHandler(SetupPhaseCommand)
 export class SetupPhaseHandler implements ICommandHandler<SetupPhaseCommand> {
   constructor(
-    private readonly repository: ConquestRepository,
+    private readonly repository: PhaseRepository,
     private readonly publisher: EventPublisher,
   ) {}
 
   async execute(command: SetupPhaseCommand) {
     console.log('SetupPhaseCommand...');
 
-    const { phase: phaseNumber, to, from } = command;
+    const { phase: phaseNumber, to, from, conquestId } = command;
     const phase: Phase = {
-      id: '1',
+      id: uuidv4(),
       to,
       from,
       number: phaseNumber,
+      conquestId,
       zones: [],
     };
-    await this.repository.createPhase('1', phase);
+    await this.repository.create(phase);
   }
 }
