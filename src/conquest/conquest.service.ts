@@ -16,12 +16,9 @@ export class ConquestService {
     return this.queryBus.execute(new GetConquestQuery());
   }
 
-  async createConquest(): Promise<Conquest> {
+  async createConquest(allianceId: string, to: Date, from: Date) {
     return this.commandBus.execute(
-      new SetupConquestCommand(
-        new Date('May 17, 2021 01:00:00'),
-        new Date('May 15, 2021 01:00:00'),
-      ),
+      new SetupConquestCommand(allianceId, to, from),
     );
   }
 
@@ -30,6 +27,7 @@ export class ConquestService {
     if (conquest === null) {
       await this.commandBus.execute(
         new SetupConquestCommand(
+          'alphaflight',
           new Date('May 17, 2021 01:00:00'),
           new Date('May 15, 2021 01:00:00'),
         ),

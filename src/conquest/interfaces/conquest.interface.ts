@@ -1,5 +1,6 @@
 export interface Conquest {
   id: string;
+  allianceId: string;
   to: Date;
   from: Date;
   phases: Phase[];

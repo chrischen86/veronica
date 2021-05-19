@@ -1,3 +1,7 @@
 export default class SetupConquestCommand {
-  constructor(public readonly to: Date, public readonly from: Date) {}
+  constructor(
+    public readonly allianceId: string,
+    public readonly to: Date,
+    public readonly from: Date,
+  ) {}
 }
