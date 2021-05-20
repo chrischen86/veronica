@@ -22,17 +22,4 @@ export class ConquestController {
   async findOne(@Param('id') id: string) {
     return this.service.findOneConquest(id);
   }
-  /*
-  @Get(':id/phase')
-  async findAllPHases(@Param('id') id) {
-    console.log('getting');
-    return this.service.findAllPhasesOnConquest(id);
-  }
-
-  @Post(':id/phase')
-  async createPhase(@Body() createConquestDto: CreateConquestDto) {
-    const { allianceId, to, from } = createConquestDto;
-    return this.service.createPhase(1, to, from, allianceId);
-  }
-  */
 }

@@ -8,6 +8,7 @@ export class ListConquestHandler implements IQueryHandler<ListConquestQuery> {
   constructor(private repository: ConquestRepository) {}
 
   async execute(): Promise<Conquest[]> {
+    console.log('Async ListConquestQuery');
     return this.repository.findAll();
   }
 }
