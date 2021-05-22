@@ -14,7 +14,7 @@ export class PhaseController {
   @Get('phase/:phaseId')
   async findOne(@Param('id') id, @Param('phaseId') phaseId) {
     console.log(`getting phase ${phaseId} on conquest ${id}`);
-    return this.service.findOnePhaseOnconquest(id, phaseId);
+    return this.service.findOnePhaseOnConquest(id, phaseId);
   }
 
   @Post('phase')

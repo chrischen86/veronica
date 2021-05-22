@@ -17,6 +17,7 @@ export interface Phase {
 
 export interface Zone {
   id: string;
+  phaseId: string;
   number: number;
   nodes: Node[];
 }

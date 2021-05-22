@@ -11,11 +11,14 @@ import MemoryStore from './repository/memory.store';
 import { PhaseRepository } from './repository/phase.repository';
 import { PhaseRepositoryMemoryAdapter } from './repository/phase-repository-memory.adapter';
 import { PhaseController } from './phase.controller';
+import { ZoneController } from './zone.controller';
+import { ZoneRepository } from './repository/zone.repository';
+import { ZoneRepositoryMemoryAdapter } from './repository/zone-repository-memory.adapter';
 
 @Module({
   imports: [CqrsModule],
   exports: [ConquestService],
-  controllers: [ConquestController, PhaseController],
+  controllers: [ConquestController, PhaseController, ZoneController],
   providers: [
     ConquestService,
     {
@@ -25,6 +28,10 @@ import { PhaseController } from './phase.controller';
     {
       provide: PhaseRepository,
       useClass: PhaseRepositoryMemoryAdapter,
+    },
+    {
+      provide: ZoneRepository,
+      useClass: ZoneRepositoryMemoryAdapter,
     },
     ...QueryHandlers,
     ...CommandHandlers,
