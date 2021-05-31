@@ -7,6 +7,7 @@ declare const module: any;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useWebSocketAdapter(new SocketIoAdapter(app, true));
+  app.enableCors();
   await app.listen(5000);
 
   if (module.hot) {
