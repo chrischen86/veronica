@@ -1,13 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import CreateNodeCommand from './commands/create-node.command';
 import CreateZoneCommand from './commands/create-zone.command';
 import SetupConquestCommand from './commands/setup-conquest.command';
 import SetupPhaseCommand from './commands/setup-phase.command';
-import { Conquest, Phase, Zone } from './interfaces/conquest.interface';
+import {
+  Conquest,
+  Node,
+  NodeStatus,
+  Phase,
+  Zone,
+} from './interfaces/conquest.interface';
 import { GetConquestQuery } from './queries/get-conquest.query';
+import { GetNodeQuery } from './queries/get-node.query';
 import { GetPhasesQuery } from './queries/get-phase.query';
 import { GetZoneQuery } from './queries/get-zone.query';
 import { ListConquestQuery } from './queries/list-conquest.query';
+import { ListNodesQuery } from './queries/list-nodes.query';
 import { ListPhasesQuery } from './queries/list-phases.query';
 import { ListZonesQuery } from './queries/list-zones.query';
 
@@ -77,6 +86,48 @@ export class ConquestService {
   ): Promise<Zone> {
     return this.commandBus.execute(
       new CreateZoneCommand(conquestId, phaseId, zoneNumber),
+    );
+  }
+
+  //NODE METHODS
+  async findAllNodesOnZone(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+  ): Promise<Node[]> {
+    return this.queryBus.execute(
+      new ListNodesQuery(conquestId, phaseId, zoneId),
+    );
+  }
+
+  async findOneNodeOnZone(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    id: string,
+  ): Promise<Node> {
+    return this.queryBus.execute(
+      new GetNodeQuery(conquestId, phaseId, zoneId, id),
+    );
+  }
+
+  async createNode(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeNumber: number,
+    ownerId: string,
+    status: NodeStatus,
+  ): Promise<Zone> {
+    return this.commandBus.execute(
+      new CreateNodeCommand(
+        conquestId,
+        phaseId,
+        zoneId,
+        nodeNumber,
+        ownerId,
+        status,
+      ),
     );
   }
 }

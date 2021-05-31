@@ -1,7 +1,6 @@
-import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
-import { Phase, Zone } from '../interfaces/conquest.interface';
-import { PhaseRepository } from '../repository/phase.repository';
+import { Zone } from '../interfaces/conquest.interface';
 import { ZoneRepository } from '../repository/zone.repository';
 import CreateZoneCommand from './create-zone.command';
 

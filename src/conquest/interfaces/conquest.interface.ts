@@ -24,6 +24,7 @@ export interface Zone {
 
 export interface Node {
   id: string;
+  zoneId: string;
   number: number;
   ownerId: string;
   status: NodeStatus;

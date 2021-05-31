@@ -14,11 +14,19 @@ import { PhaseController } from './phase.controller';
 import { ZoneController } from './zone.controller';
 import { ZoneRepository } from './repository/zone.repository';
 import { ZoneRepositoryMemoryAdapter } from './repository/zone-repository-memory.adapter';
+import { NodeRepository } from './repository/node.repository';
+import { NodeRepositoryMemoryAdapter } from './repository/node-repository-memory.adapter';
+import { NodeController } from './node.controller';
 
 @Module({
   imports: [CqrsModule],
   exports: [ConquestService],
-  controllers: [ConquestController, PhaseController, ZoneController],
+  controllers: [
+    ConquestController,
+    PhaseController,
+    ZoneController,
+    NodeController,
+  ],
   providers: [
     ConquestService,
     {
@@ -32,6 +40,10 @@ import { ZoneRepositoryMemoryAdapter } from './repository/zone-repository-memory
     {
       provide: ZoneRepository,
       useClass: ZoneRepositoryMemoryAdapter,
+    },
+    {
+      provide: NodeRepository,
+      useClass: NodeRepositoryMemoryAdapter,
     },
     ...QueryHandlers,
     ...CommandHandlers,

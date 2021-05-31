@@ -4,6 +4,8 @@ import { GetPhaseHandler } from './get-phase.handler';
 import { ListPhasesHandler } from './list-phases.handler';
 import { GetZoneHandler } from './get-zone.handler';
 import { ListZonesHandler } from './list-zones.handler';
+import { GetNodeHandler } from './get-node.handler';
+import { ListNodesHandler } from './list-nodes.handler';
 
 export const QueryHandlers = [
   GetConquestHandler,
@@ -12,4 +14,6 @@ export const QueryHandlers = [
   ListPhasesHandler,
   GetZoneHandler,
   ListZonesHandler,
+  GetNodeHandler,
+  ListNodesHandler,
 ];
