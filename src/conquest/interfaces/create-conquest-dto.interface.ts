@@ -1,5 +1,5 @@
 export interface CreateConquestDto {
-  to: Date;
-  from: Date;
+  startDate: Date;
+  endDate: Date;
   allianceId: string;
 }

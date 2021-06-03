@@ -8,8 +8,8 @@ export class ConquestController {
 
   @Post()
   async createConquest(@Body() createConquestDto: CreateConquestDto) {
-    const { allianceId, to, from } = createConquestDto;
-    return this.service.createConquest(allianceId, to, from);
+    const { allianceId, startDate, endDate } = createConquestDto;
+    return this.service.createConquest(allianceId, startDate, endDate);
   }
 
   @Get()

@@ -37,9 +37,9 @@ export class ConquestService {
     return this.queryBus.execute(new GetConquestQuery(conquestId));
   }
 
-  async createConquest(allianceId: string, to: Date, from: Date) {
+  async createConquest(allianceId: string, startDate: Date, endDate: Date) {
     return this.commandBus.execute(
-      new SetupConquestCommand(allianceId, to, from),
+      new SetupConquestCommand(allianceId, startDate, endDate),
     );
   }
 
@@ -54,12 +54,12 @@ export class ConquestService {
 
   async createPhase(
     phaseNumber: number,
-    to: Date,
-    from: Date,
+    startDate: Date,
+    endDate: Date,
     conquestId: string,
   ): Promise<Phase> {
     return this.commandBus.execute(
-      new SetupPhaseCommand(phaseNumber, to, from, conquestId),
+      new SetupPhaseCommand(phaseNumber, startDate, endDate, conquestId),
     );
   }
 

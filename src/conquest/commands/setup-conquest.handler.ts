@@ -16,17 +16,19 @@ export class SetupConquestHandler
 
   async execute(command: SetupConquestCommand) {
     console.log('CreateConquestCommand...');
-    const { to, from, allianceId } = command;
+    const { startDate, endDate, allianceId } = command;
 
     const conquest: Conquest = {
       id: uuidv4(),
       allianceId,
-      to,
-      from,
+      startDate,
+      endDate,
       phases: [],
     };
 
     await this.repository.create(conquest);
-    this.eventBus.publish(new ConquestCreatedEvent(conquest.id, to, from));
+    this.eventBus.publish(
+      new ConquestCreatedEvent(conquest.id, startDate, endDate),
+    );
   }
 }

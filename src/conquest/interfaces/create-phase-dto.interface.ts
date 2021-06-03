@@ -1,6 +1,6 @@
 export interface CreatePhaseDto {
   phase: number;
-  to: Date;
-  from: Date;
+  startDate: Date;
+  endDate: Date;
   conquestId: string;
 }

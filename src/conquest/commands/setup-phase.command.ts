@@ -1,8 +1,8 @@
 export default class SetupPhaseCommand {
   constructor(
     public readonly phase: number,
-    public readonly to: Date,
-    public readonly from: Date,
+    public readonly startDate: Date,
+    public readonly endDate: Date,
     public readonly conquestId: string,
   ) {}
 }

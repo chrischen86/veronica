@@ -1,7 +1,7 @@
 export class ConquestCreatedEvent {
   constructor(
     public readonly conquestId: string,
-    public readonly to: Date,
-    public readonly from: Date,
+    public readonly startDate: Date,
+    public readonly endDate: Date,
   ) {}
 }

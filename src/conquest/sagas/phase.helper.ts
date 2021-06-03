@@ -2,12 +2,12 @@ export const phase1 = '17:00:00.000';
 export const phase2 = '01:00:00.000';
 export const phase3 = '09:00:00.000';
 
-export const getPhasesTimes = (to: Date, from: Date) => {
+export const getPhasesTimes = (startDate: Date, endDate: Date) => {
   const phases = [];
 
-  let runningDate = to;
+  let runningDate = startDate;
 
-  while (runningDate < from) {
+  while (runningDate < endDate) {
     phases.push(runningDate);
     const currentDate = new Date(runningDate);
     currentDate.setHours(currentDate.getHours() + 8);
@@ -17,13 +17,13 @@ export const getPhasesTimes = (to: Date, from: Date) => {
   return phases;
 };
 
-export const getPhases = (to: Date, from: Date) => {
-  const phaseStartTimes = getPhasesTimes(to, from);
+export const getPhases = (startDate: Date, endDate: Date) => {
+  const phaseStartTimes = getPhasesTimes(startDate, endDate);
 
   const phases = phaseStartTimes.map((p) => {
     const phaseEnd = new Date(p);
     phaseEnd.setHours(phaseEnd.getHours() + 2);
-    return { phase: 1, to: p, from: phaseEnd };
+    return { phase: 1, startDate: p, endDate: phaseEnd };
   });
 
   console.log(phases);

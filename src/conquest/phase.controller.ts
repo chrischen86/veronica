@@ -19,7 +19,7 @@ export class PhaseController {
 
   @Post('phase')
   async createPhase(@Body() createPhaseDto: CreatePhaseDto) {
-    const { phase, to, from, conquestId } = createPhaseDto;
-    return this.service.createPhase(phase, to, from, conquestId);
+    const { phase, startDate, endDate, conquestId } = createPhaseDto;
+    return this.service.createPhase(phase, startDate, endDate, conquestId);
   }
 }

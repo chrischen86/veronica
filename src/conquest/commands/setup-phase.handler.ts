@@ -14,11 +14,11 @@ export class SetupPhaseHandler implements ICommandHandler<SetupPhaseCommand> {
   async execute(command: SetupPhaseCommand) {
     console.log('SetupPhaseCommand...');
 
-    const { phase: phaseNumber, to, from, conquestId } = command;
+    const { phase: phaseNumber, startDate, endDate, conquestId } = command;
     const phase: Phase = {
       id: uuidv4(),
-      to,
-      from,
+      startDate,
+      endDate,
       number: phaseNumber,
       conquestId,
       zones: [],

@@ -14,7 +14,12 @@ export class ConquestSagas {
       delay(1000),
       map((event) => {
         console.log('Inside [ConquestSagas] Saga');
-        return new SetupPhaseCommand(1, event.to, event.from, event.conquestId);
+        return new SetupPhaseCommand(
+          1,
+          event.startDate,
+          event.endDate,
+          event.conquestId,
+        );
       }),
     );
   };

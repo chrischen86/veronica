@@ -1,8 +1,8 @@
 export interface Conquest {
   id: string;
   allianceId: string;
-  to: Date;
-  from: Date;
+  startDate: Date;
+  endDate: Date;
   phases: Phase[];
 }
 
@@ -10,8 +10,8 @@ export interface Phase {
   id: string;
   conquestId: string;
   number: number;
-  to: Date;
-  from: Date;
+  startDate: Date;
+  endDate: Date;
   zones: Zone[];
 }
 
