@@ -1,5 +1,7 @@
+import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConquestController } from './conquest.controller';
+import { ConquestService } from './conquest.service';
 
 describe('ConquestController', () => {
   let controller: ConquestController;
@@ -7,6 +9,8 @@ describe('ConquestController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ConquestController],
+      providers: [ConquestService],
+      imports: [CqrsModule],
     }).compile();
 
     controller = module.get<ConquestController>(ConquestController);
