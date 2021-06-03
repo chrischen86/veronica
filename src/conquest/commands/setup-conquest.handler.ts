@@ -27,6 +27,6 @@ export class SetupConquestHandler
     };
 
     await this.repository.create(conquest);
-    this.eventBus.publish(new ConquestCreatedEvent(conquest.id));
+    this.eventBus.publish(new ConquestCreatedEvent(conquest.id, to, from));
   }
 }

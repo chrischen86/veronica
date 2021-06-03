@@ -17,6 +17,7 @@ import { ZoneRepositoryMemoryAdapter } from './repository/zone-repository-memory
 import { NodeRepository } from './repository/node.repository';
 import { NodeRepositoryMemoryAdapter } from './repository/node-repository-memory.adapter';
 import { NodeController } from './node.controller';
+import { ConquestSagas } from './sagas/conquest.sagas';
 
 @Module({
   imports: [CqrsModule],
@@ -49,6 +50,7 @@ import { NodeController } from './node.controller';
     ...CommandHandlers,
     ...EventHandlers,
     MemoryStore,
+    ConquestSagas,
   ],
 })
 export class ConquestModule {}
