@@ -5,6 +5,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConquestService } from 'src/conquest/conquest.service';
+import { JoinDto } from './interfaces/join-dto.interface';
 
 @WebSocketGateway()
 export class SocketioGateway {
@@ -13,9 +14,19 @@ export class SocketioGateway {
 
   constructor(private readonly service: ConquestService) {}
 
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!';
+  @SubscribeMessage('join')
+  async handleJoin(socket: Socket, payload: JoinDto) {
+    const { roomNumber } = payload;
+
+    const conquest = await this.service.findOneConquest(roomNumber);
+    console.log(conquest);
+    console.log(`joining ${roomNumber}`);
+    socket.join(roomNumber);
+
+    return {
+      status: 'ok',
+      conquestState: conquest,
+    };
   }
 
   @SubscribeMessage('createRoom')
@@ -23,7 +34,6 @@ export class SocketioGateway {
     console.log('createGame');
     console.log(message);
     socket.join('conquest1');
-
     return {
       status: 'ok',
       players: [],
