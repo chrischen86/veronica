@@ -5,6 +5,7 @@ import CreateZoneCommand from './commands/create-zone.command';
 import DeleteConquestCommand from './commands/delete-conquest.command';
 import SetupConquestCommand from './commands/setup-conquest.command';
 import SetupPhaseCommand from './commands/setup-phase.command';
+import UpdateNodeCommand from './commands/update-node.command';
 import {
   Conquest,
   Node,
@@ -124,13 +125,33 @@ export class ConquestService {
     nodeNumber: number,
     ownerId: string,
     status: NodeStatus,
-  ): Promise<Zone> {
+  ): Promise<Node> {
     return this.commandBus.execute(
       new CreateNodeCommand(
         conquestId,
         phaseId,
         zoneId,
         nodeNumber,
+        status,
+        ownerId,
+      ),
+    );
+  }
+
+  async updateNode(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId?: string,
+    status?: NodeStatus,
+  ) {
+    return this.commandBus.execute(
+      new UpdateNodeCommand(
+        conquestId,
+        phaseId,
+        zoneId,
+        nodeId,
         status,
         ownerId,
       ),

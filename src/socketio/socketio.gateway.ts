@@ -5,6 +5,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConquestService } from 'src/conquest/conquest.service';
+import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { SetupZoneDto } from './interfaces/setup-zone-dto.interface';
 
@@ -59,23 +60,17 @@ export class SocketioGateway {
     };
   }
 
-  @SubscribeMessage('createRoom')
-  handleCreateRoom(socket: Socket, message: string): any {
-    console.log('createGame');
-    console.log(message);
-    socket.join('conquest1');
+  @SubscribeMessage('assignNode')
+  async handleAssignNode(socket: Socket, payload: AssignNodeDto) {
+    console.log('AssignNode Message...');
+    const { conquestId, phaseId, zoneId, nodeId, ownerId } = payload;
+    await this.service.updateNode(conquestId, phaseId, zoneId, nodeId, ownerId);
+
+    console.log(payload);
+    const updatedConquest = await this.service.findOneConquest(conquestId);
     return {
       status: 'ok',
-      players: [],
-      gameState: {
-        words: [],
-        status: 'NOT_STARTED',
-        players: [],
-        hostId: '',
-        turnOrder: [],
-        turn: 1,
-      },
-      roomNumber: '1',
+      conquestState: updatedConquest,
     };
   }
 }

@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Conquest, Node, Phase, Zone } from '../interfaces/conquest.interface';
+import {
+  Conquest,
+  Node,
+  NodeStatus,
+  Phase,
+  Zone,
+} from '../interfaces/conquest.interface';
 import MemoryStore from './memory.store';
 import { NodeRepository } from './node.repository';
 
@@ -78,6 +84,61 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
     const updatedZone: Zone = {
       ...zone,
       nodes: [...zone.nodes, node],
+    };
+    const updatedZones = zones.map((z) => (z.id === zoneId ? updatedZone : z));
+    const updatedPhase: Phase = {
+      ...phase,
+      zones: updatedZones,
+    };
+    const updatedPhases = phases.map((p) =>
+      p.id === phaseId ? updatedPhase : p,
+    );
+    const newConquest = {
+      ...conquest,
+      phases: updatedPhases,
+    };
+    this.conquestMap.set(conquestId, newConquest);
+  }
+
+  async update(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId?: string,
+    status?: NodeStatus,
+  ) {
+    if (!this.conquestMap.has(conquestId)) {
+      return null;
+    }
+
+    const conquest = this.conquestMap.get(conquestId);
+    const { phases } = conquest;
+    const phase = phases.find((p) => p.id === phaseId);
+    if (phase === undefined) {
+      return null;
+    }
+    const { zones } = phase;
+    const zone = zones.find((z) => z.id === zoneId);
+    if (zone === undefined) {
+      return null;
+    }
+    const { nodes } = zone;
+    const node = nodes.find((n) => n.id === nodeId);
+    if (node === undefined) {
+      return null;
+    }
+
+    const updatedNode = {
+      ...node,
+      ownerId,
+      status: status ?? node.status,
+    };
+
+    const updatedNodes = nodes.map((n) => (n.id === node.id ? updatedNode : n));
+    const updatedZone: Zone = {
+      ...zone,
+      nodes: updatedNodes,
     };
     const updatedZones = zones.map((z) => (z.id === zoneId ? updatedZone : z));
     const updatedPhase: Phase = {

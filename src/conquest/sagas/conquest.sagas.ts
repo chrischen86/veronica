@@ -50,7 +50,7 @@ export class ConquestSagas {
               zone.phaseId,
               zone.id,
               n,
-              holds.indexOf(n) >= 0 ? NodeStatus.OPEN : NodeStatus.HOLD,
+              holds.indexOf(n) >= 0 ? NodeStatus.HOLD : NodeStatus.OPEN,
             ),
         );
       }),

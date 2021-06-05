@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ConquestService } from './conquest.service';
 import { CreateNodeDto } from './interfaces/create-node-dto.interface';
-import { CreateZoneDto } from './interfaces/create-zone-dto.interface';
 
 @Controller('conquest/:id/phase/:phaseId/zone/:zoneId')
 export class NodeController {

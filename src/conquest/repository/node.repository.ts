@@ -1,4 +1,4 @@
-import { Node } from '../interfaces/conquest.interface';
+import { Node, NodeStatus } from '../interfaces/conquest.interface';
 
 export abstract class NodeRepository {
   abstract findAllOnZone(
@@ -17,4 +17,12 @@ export abstract class NodeRepository {
     phaseId: string,
     node: Node,
   ): Promise<Node>;
+  abstract update(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId?: string,
+    status?: NodeStatus,
+  );
 }
