@@ -6,7 +6,7 @@ export default class CreateNodeCommand {
     public readonly phaseId: string,
     public readonly zoneId: string,
     public readonly nodeNumber: number,
-    public readonly ownerId: string,
     public readonly status: NodeStatus,
+    public readonly ownerId?: string,
   ) {}
 }

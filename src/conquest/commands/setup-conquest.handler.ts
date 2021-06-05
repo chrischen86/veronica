@@ -26,7 +26,9 @@ export class SetupConquestHandler
       phases: [],
     };
 
-    await this.repository.create(conquest);
+    const created = await this.repository.create(conquest);
+    console.log('*********');
+    console.log(created);
     this.eventBus.publish(
       new ConquestCreatedEvent(conquest.id, startDate, endDate),
     );

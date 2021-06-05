@@ -1,6 +1,4 @@
-export const phase1 = '17:00:00.000';
-export const phase2 = '01:00:00.000';
-export const phase3 = '09:00:00.000';
+const PHASES_START_TIMES = [17, 1, 9];
 
 export const getPhasesTimes = (startDate: Date, endDate: Date) => {
   const phases = [];
@@ -20,12 +18,12 @@ export const getPhasesTimes = (startDate: Date, endDate: Date) => {
 export const getPhases = (startDate: Date, endDate: Date) => {
   const phaseStartTimes = getPhasesTimes(startDate, endDate);
 
-  const phases = phaseStartTimes.map((p) => {
+  const phases = phaseStartTimes.map((p: Date) => {
     const phaseEnd = new Date(p);
     phaseEnd.setHours(phaseEnd.getHours() + 2);
-    return { phase: 1, startDate: p, endDate: phaseEnd };
+    const phase = PHASES_START_TIMES.indexOf(p.getUTCHours()) + 1;
+    return { phase, startDate: p, endDate: phaseEnd };
   });
 
-  console.log(phases);
   return phases;
 };
