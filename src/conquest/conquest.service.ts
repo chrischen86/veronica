@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import CreateNodeCommand from './commands/create-node.command';
 import CreateZoneCommand from './commands/create-zone.command';
+import DeleteConquestCommand from './commands/delete-conquest.command';
 import SetupConquestCommand from './commands/setup-conquest.command';
 import SetupPhaseCommand from './commands/setup-phase.command';
 import {
@@ -41,6 +42,10 @@ export class ConquestService {
     return this.commandBus.execute(
       new SetupConquestCommand(allianceId, startDate, endDate),
     );
+  }
+
+  async deleteOneConquest(conquestId: string) {
+    return this.commandBus.execute(new DeleteConquestCommand(conquestId));
   }
 
   //PHASE METHODS
@@ -83,9 +88,10 @@ export class ConquestService {
     conquestId: string,
     phaseId: string,
     zoneNumber: number,
+    holds: number[] = [],
   ): Promise<Zone> {
     return this.commandBus.execute(
-      new CreateZoneCommand(conquestId, phaseId, zoneNumber),
+      new CreateZoneCommand(conquestId, phaseId, zoneNumber, holds),
     );
   }
 
@@ -125,8 +131,8 @@ export class ConquestService {
         phaseId,
         zoneId,
         nodeNumber,
-        ownerId,
         status,
+        ownerId,
       ),
     );
   }

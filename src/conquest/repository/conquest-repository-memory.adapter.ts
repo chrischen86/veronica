@@ -43,4 +43,14 @@ export class ConquestRepositoryMemoryAdapter extends ConquestRepository {
 
     return conquest;
   }
+
+  async delete(conquestId: string) {
+    if (!this.conquestMap.has(conquestId)) {
+      return false;
+    }
+
+    this.conquestMap.delete(conquestId);
+
+    return true;
+  }
 }
