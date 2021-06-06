@@ -21,7 +21,6 @@ export class SocketioGateway {
     const { roomNumber } = payload;
 
     const conquest = await this.service.findOneConquest(roomNumber);
-    console.log(conquest);
     if (conquest === null) {
       return {
         status: 'error',
@@ -65,8 +64,6 @@ export class SocketioGateway {
     console.log('AssignNode Message...');
     const { conquestId, phaseId, zoneId, nodeId, ownerId } = payload;
     await this.service.updateNode(conquestId, phaseId, zoneId, nodeId, ownerId);
-
-    console.log(payload);
     const updatedConquest = await this.service.findOneConquest(conquestId);
     return {
       status: 'ok',

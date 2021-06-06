@@ -3,6 +3,7 @@ import { ICommand, ofType, Saga } from '@nestjs/cqrs';
 import { Observable } from 'rxjs';
 import { delay, mergeMap, map } from 'rxjs/operators';
 import CreateNodeCommand from '../commands/create-node.command';
+import CreateNodesCommand from '../commands/create-nodes.command';
 import SetupPhaseCommand from '../commands/setup-phase.command';
 import { NODES } from '../constants';
 import { ConquestCreatedEvent } from '../events/conquest-created.event';
@@ -43,18 +44,26 @@ export class ConquestSagas {
 
         const { conquestId, zone, holds } = event;
 
-        return NODES.map(
-          (n) =>
-            new CreateNodeCommand(
-              conquestId,
-              zone.phaseId,
-              zone.id,
-              n,
-              holds.indexOf(n) >= 0 ? NodeStatus.HOLD : NodeStatus.OPEN,
-            ),
+        return new CreateNodesCommand(
+          conquestId,
+          zone.phaseId,
+          zone.id,
+          NODES,
+          holds,
         );
+
+        // return NODES.map(
+        //   (n) =>
+        //     new CreateNodeCommand(
+        //       conquestId,
+        //       zone.phaseId,
+        //       zone.id,
+        //       n,
+        //       holds.indexOf(n) >= 0 ? NodeStatus.HOLD : NodeStatus.OPEN,
+        //     ),
+        // );
       }),
-      mergeMap((c) => c),
+      //mergeMap((c) => c),
     );
   };
 }
