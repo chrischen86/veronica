@@ -7,6 +7,7 @@ import { Server, Socket } from 'socket.io';
 import { ConquestService } from 'src/conquest/conquest.service';
 import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
+import { ReconnectDto } from './interfaces/reconnect-dto.interface';
 import { SetupZoneDto } from './interfaces/setup-zone-dto.interface';
 
 @WebSocketGateway()
@@ -68,6 +69,26 @@ export class SocketioGateway {
     return {
       status: 'ok',
       conquestState: updatedConquest,
+    };
+  }
+
+  @SubscribeMessage('reconnectSync')
+  async handleReconnect(socket: Socket, payload: ReconnectDto) {
+    console.log('ReconnectSync Message...');
+    const { conquestId } = payload;
+    const conquestState = await this.service.findOneConquest(conquestId);
+
+    if (conquestState === null) {
+      return {
+        status: 'error',
+        message: 'Conquest no longer exists',
+      };
+    }
+
+    socket.join(conquestId);
+    return {
+      status: 'ok',
+      conquestState,
     };
   }
 }
