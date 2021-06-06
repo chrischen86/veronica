@@ -1,10 +1,14 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { NodeUpdatedEvent } from '../events/node-updated.event';
 import { NodeRepository } from '../repository/node.repository';
 import UpdateNodeCommand from './update-node.command';
 
 @CommandHandler(UpdateNodeCommand)
 export class UpdateNodeHandler implements ICommandHandler<UpdateNodeCommand> {
-  constructor(private readonly repository: NodeRepository) {}
+  constructor(
+    private readonly repository: NodeRepository,
+    private readonly eventBus: EventBus,
+  ) {}
 
   async execute(command: UpdateNodeCommand) {
     console.log('UpdateNodeCommand...');
@@ -29,5 +33,7 @@ export class UpdateNodeHandler implements ICommandHandler<UpdateNodeCommand> {
       ownerId,
       status,
     );
+
+    this.eventBus.publish(new NodeUpdatedEvent(conquestId, nodeId));
   }
 }
