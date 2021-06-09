@@ -6,12 +6,14 @@ import DeleteConquestCommand from './commands/delete-conquest.command';
 import SetupConquestCommand from './commands/setup-conquest.command';
 import SetupPhaseCommand from './commands/setup-phase.command';
 import UpdateNodeCommand from './commands/update-node.command';
+import UpdateZoneOrdersCommand from './commands/update-zone-orders.command';
 import {
   Conquest,
   Node,
   NodeStatus,
   Phase,
   Zone,
+  ZoneOrders,
 } from './interfaces/conquest.interface';
 import { GetConquestQuery } from './queries/get-conquest.query';
 import { GetNodeQuery } from './queries/get-node.query';
@@ -93,6 +95,17 @@ export class ConquestService {
   ): Promise<Zone> {
     return this.commandBus.execute(
       new CreateZoneCommand(conquestId, phaseId, zoneNumber, holds),
+    );
+  }
+
+  async updateZone(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    orders: ZoneOrders,
+  ) {
+    return this.commandBus.execute(
+      new UpdateZoneOrdersCommand(conquestId, phaseId, zoneId, orders),
     );
   }
 

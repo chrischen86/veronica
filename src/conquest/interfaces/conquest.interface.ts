@@ -20,6 +20,7 @@ export interface Zone {
   phaseId: string;
   number: number;
   nodes: Node[];
+  orders: ZoneOrders;
 }
 
 export interface Node {
@@ -33,4 +34,10 @@ export interface Node {
 export enum NodeStatus {
   'OPEN',
   'HOLD',
+}
+
+export enum ZoneOrders {
+  Fill = 'FILL',
+  Finish = 'FINISH',
+  Stop = 'STOP',
 }

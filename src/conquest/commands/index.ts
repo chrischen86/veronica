@@ -5,6 +5,7 @@ import { CreateNodeHandler } from './create-node.handler';
 import { DeleteConquestHandler } from './delete-conquest.handler';
 import { UpdateNodeHandler } from './update-node.handler';
 import { CreateNodesHandler } from './create-nodes.handler';
+import { UpdateZoneOrdersCommandHandler } from './update-zone-orders.handler';
 
 export const CommandHandlers = [
   SetupConquestHandler,
@@ -14,4 +15,5 @@ export const CommandHandlers = [
   DeleteConquestHandler,
   UpdateNodeHandler,
   CreateNodesHandler,
+  UpdateZoneOrdersCommandHandler,
 ];

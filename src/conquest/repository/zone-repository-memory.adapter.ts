@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Conquest, Phase, Zone } from '../interfaces/conquest.interface';
+import {
+  Conquest,
+  Phase,
+  Zone,
+  ZoneOrders,
+} from '../interfaces/conquest.interface';
 import MemoryStore from './memory.store';
 import { ZoneRepository } from './zone.repository';
 
@@ -58,6 +63,42 @@ export class ZoneRepositoryMemoryAdapter extends ZoneRepository {
     const updatedPhase: Phase = {
       ...phase,
       zones: [...phase.zones, zone],
+    };
+    const updatedPhases = phases.map((p) =>
+      p.id === phaseId ? updatedPhase : p,
+    );
+    const newConquest = {
+      ...conquest,
+      phases: updatedPhases,
+    };
+    this.conquestMap.set(conquestId, newConquest);
+  }
+
+  update(conquestId: string, phaseId: string, id: string, orders: ZoneOrders) {
+    if (!this.conquestMap.has(conquestId)) {
+      return null;
+    }
+
+    const conquest = this.conquestMap.get(conquestId);
+    const { phases } = conquest;
+    const phase = phases.find((p) => p.id === phaseId);
+    if (phase === undefined) {
+      return null;
+    }
+    const { zones } = phase;
+    const zone = zones.find((z) => z.id === id);
+    if (zone === undefined) {
+      return null;
+    }
+
+    const updatedZone: Zone = {
+      ...zone,
+      orders,
+    };
+    const updatedZones = zones.map((z) => (z.id === id ? updatedZone : z));
+    const updatedPhase: Phase = {
+      ...phase,
+      zones: updatedZones,
     };
     const updatedPhases = phases.map((p) =>
       p.id === phaseId ? updatedPhase : p,
