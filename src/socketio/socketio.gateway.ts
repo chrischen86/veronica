@@ -10,6 +10,7 @@ import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';
 import { SetupZoneDto } from './interfaces/setup-zone-dto.interface';
 import { UpdateZoneOrdersDto } from './interfaces/update-zone-orders-dto.interface';
+import { UpdateZoneStatusDto } from './interfaces/update-zone-status-dto.interface';
 
 @WebSocketGateway()
 export class SocketioGateway {
@@ -78,6 +79,18 @@ export class SocketioGateway {
     console.log('UpdateZoneOrders Message...');
     const { conquestId, phaseId, zoneId, orders } = payload;
     await this.service.updateZone(conquestId, phaseId, zoneId, orders);
+    const updatedConquest = await this.service.findOneConquest(conquestId);
+    return {
+      status: 'ok',
+      conquestState: updatedConquest,
+    };
+  }
+
+  @SubscribeMessage('updateZoneStatus')
+  async handleUpdateZoneStatus(socket: Socket, payload: UpdateZoneStatusDto) {
+    console.log('UpdateZoneStatus Message...');
+    const { conquestId, phaseId, zoneId, status } = payload;
+    await this.service.updateZoneStatus(conquestId, phaseId, zoneId, status);
     const updatedConquest = await this.service.findOneConquest(conquestId);
     return {
       status: 'ok',

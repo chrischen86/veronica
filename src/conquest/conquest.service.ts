@@ -7,6 +7,7 @@ import SetupConquestCommand from './commands/setup-conquest.command';
 import SetupPhaseCommand from './commands/setup-phase.command';
 import UpdateNodeCommand from './commands/update-node.command';
 import UpdateZoneOrdersCommand from './commands/update-zone-orders.command';
+import UpdateZoneStatusCommand from './commands/update-zone-status.command';
 import {
   Conquest,
   Node,
@@ -14,6 +15,7 @@ import {
   Phase,
   Zone,
   ZoneOrders,
+  ZoneStatus,
 } from './interfaces/conquest.interface';
 import { GetConquestQuery } from './queries/get-conquest.query';
 import { GetNodeQuery } from './queries/get-node.query';
@@ -109,6 +111,16 @@ export class ConquestService {
     );
   }
 
+  async updateZoneStatus(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    status: ZoneStatus,
+  ) {
+    return this.commandBus.execute(
+      new UpdateZoneStatusCommand(conquestId, phaseId, zoneId, status),
+    );
+  }
   //NODE METHODS
   async findAllNodesOnZone(
     conquestId: string,

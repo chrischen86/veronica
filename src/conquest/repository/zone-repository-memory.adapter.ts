@@ -5,6 +5,7 @@ import {
   Zone,
   ZoneOrders,
 } from '../interfaces/conquest.interface';
+import { UpdateZoneDto } from '../interfaces/update-zone-dto.interface';
 import MemoryStore from './memory.store';
 import { ZoneRepository } from './zone.repository';
 
@@ -74,7 +75,9 @@ export class ZoneRepositoryMemoryAdapter extends ZoneRepository {
     this.conquestMap.set(conquestId, newConquest);
   }
 
-  update(conquestId: string, phaseId: string, id: string, orders: ZoneOrders) {
+  update(updateZoneDto: UpdateZoneDto) {
+    const { conquestId, phaseId, zoneId: id, status, orders } = updateZoneDto;
+
     if (!this.conquestMap.has(conquestId)) {
       return null;
     }
@@ -93,8 +96,10 @@ export class ZoneRepositoryMemoryAdapter extends ZoneRepository {
 
     const updatedZone: Zone = {
       ...zone,
-      orders,
+      ...(orders !== undefined && { orders }),
+      ...(status !== undefined && { status }),
     };
+
     const updatedZones = zones.map((z) => (z.id === id ? updatedZone : z));
     const updatedPhase: Phase = {
       ...phase,

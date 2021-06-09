@@ -1,7 +1,7 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 import { ZoneCreatedEvent } from '../events/zone-created.event';
-import { Zone, ZoneOrders } from '../interfaces/conquest.interface';
+import { Zone, ZoneOrders, ZoneStatus } from '../interfaces/conquest.interface';
 import { ZoneRepository } from '../repository/zone.repository';
 import CreateZoneCommand from './create-zone.command';
 
@@ -22,6 +22,7 @@ export class CreateZoneHandler implements ICommandHandler<CreateZoneCommand> {
       number: zoneNumber,
       nodes: [],
       orders: ZoneOrders.Fill,
+      status: ZoneStatus.Open,
     };
     await this.repository.create(conquestId, zone);
     this.eventBus.publish(new ZoneCreatedEvent(conquestId, zone, holds));

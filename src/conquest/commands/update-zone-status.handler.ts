@@ -2,21 +2,21 @@ import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { ZoneOrdersUpdatedEvent } from '../events/zone-orders-updated.event';
 import { UpdateZoneDto } from '../interfaces/update-zone-dto.interface';
 import { ZoneRepository } from '../repository/zone.repository';
-import UpdateZoneOrdersCommand from './update-zone-orders.command';
+import UpdateZoneStatusCommand from './update-zone-status.command';
 
-@CommandHandler(UpdateZoneOrdersCommand)
-export class UpdateZoneOrdersCommandHandler
-  implements ICommandHandler<UpdateZoneOrdersCommand>
+@CommandHandler(UpdateZoneStatusCommand)
+export class UpdateZoneStatusCommandHandler
+  implements ICommandHandler<UpdateZoneStatusCommand>
 {
   constructor(
     private readonly repository: ZoneRepository,
     private readonly eventBus: EventBus,
   ) {}
 
-  async execute(command: UpdateZoneOrdersCommand) {
-    console.log('UpdateZoneOrdersCommand...');
+  async execute(command: UpdateZoneStatusCommand) {
+    console.log('UpdateZoneStatusCommand...');
 
-    const { conquestId, phaseId, zoneId, orders } = command;
+    const { conquestId, phaseId, zoneId, status } = command;
     const zone = await this.repository.findOneOnPhaseById(
       conquestId,
       phaseId,
@@ -31,9 +31,8 @@ export class UpdateZoneOrdersCommandHandler
       conquestId,
       phaseId,
       zoneId,
-      orders,
+      status,
     };
-
     await this.repository.update(zoneUpdateDto);
     this.eventBus.publish(new ZoneOrdersUpdatedEvent(conquestId, zoneId));
   }

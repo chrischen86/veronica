@@ -21,6 +21,7 @@ export interface Zone {
   number: number;
   nodes: Node[];
   orders: ZoneOrders;
+  status: ZoneStatus;
 }
 
 export interface Node {
@@ -40,4 +41,10 @@ export enum ZoneOrders {
   Fill = 'FILL',
   Finish = 'FINISH',
   Stop = 'STOP',
+}
+
+export enum ZoneStatus {
+  Open = 'OPEN',
+  Sealing = 'SEALING',
+  Lost = 'LOST',
 }
