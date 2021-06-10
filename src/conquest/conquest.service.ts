@@ -3,6 +3,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import CreateNodeCommand from './commands/create-node.command';
 import CreateZoneCommand from './commands/create-zone.command';
 import DeleteConquestCommand from './commands/delete-conquest.command';
+import RequestNodeCommand from './commands/request-node.command';
 import SetupConquestCommand from './commands/setup-conquest.command';
 import SetupPhaseCommand from './commands/setup-phase.command';
 import UpdateNodeCommand from './commands/update-node.command';
@@ -180,6 +181,18 @@ export class ConquestService {
         status,
         ownerId,
       ),
+    );
+  }
+
+  async requestNode(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId: string,
+  ) {
+    return this.commandBus.execute(
+      new RequestNodeCommand(conquestId, phaseId, zoneId, nodeId, ownerId),
     );
   }
 }

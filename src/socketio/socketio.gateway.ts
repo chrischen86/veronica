@@ -66,8 +66,44 @@ export class SocketioGateway {
   async handleAssignNode(socket: Socket, payload: AssignNodeDto) {
     console.log('AssignNode Message...');
     const { conquestId, phaseId, zoneId, nodeId, ownerId } = payload;
-    await this.service.updateNode(conquestId, phaseId, zoneId, nodeId, ownerId);
+    await this.service.requestNode(
+      conquestId,
+      phaseId,
+      zoneId,
+      nodeId,
+      ownerId,
+    );
     const updatedConquest = await this.service.findOneConquest(conquestId);
+    const { phases } = updatedConquest;
+    const phase = phases.find((p) => p.id === phaseId);
+
+    const errorResponse = {
+      status: 'error',
+      conquestState: updatedConquest,
+    };
+
+    if (phase === undefined) {
+      return errorResponse;
+    }
+    const { zones } = phase;
+    const zone = zones.find((z) => z.id === zoneId);
+    if (zone === undefined) {
+      return errorResponse;
+    }
+    const { nodes } = zone;
+    const node = nodes.find((n) => n.id === nodeId);
+    if (node === undefined) {
+      return errorResponse;
+    }
+
+    if (ownerId !== node.ownerId) {
+      return {
+        status: 'warn',
+        message: 'Node is assigned to another',
+        conquestState: updatedConquest,
+      };
+    }
+
     return {
       status: 'ok',
       conquestState: updatedConquest,

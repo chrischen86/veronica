@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  Conquest,
-  Phase,
-  Zone,
-  ZoneOrders,
-} from '../interfaces/conquest.interface';
+import { Conquest, Phase, Zone } from '../interfaces/conquest.interface';
 import { UpdateZoneDto } from '../interfaces/update-zone-dto.interface';
 import MemoryStore from './memory.store';
 import { ZoneRepository } from './zone.repository';
