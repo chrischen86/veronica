@@ -8,7 +8,8 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { Injectable } from '@nestjs/common';
 import { Conquest } from '../../conquest/interfaces/conquest.interface';
-import { ConquestRepository } from '../../conquest/repository/conquest.repository';
+import { ConquestRepository } from '../repository/conquest.repository';
+
 import { parse } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import {

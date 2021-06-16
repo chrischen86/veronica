@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Conquest, Phase } from '../interfaces/conquest.interface';
-import { ConquestRepository } from './conquest.repository';
-import MemoryStore from './memory.store';
+import { Conquest, Phase } from '../../conquest/interfaces/conquest.interface';
+import { ConquestRepository } from '../repository/conquest.repository';
 
 @Injectable()
 export class ConquestRepositoryMemoryAdapter extends ConquestRepository {
   private conquestMap: Map<string, Conquest>;
 
-  constructor(private readonly store: MemoryStore) {
+  constructor() {
     super();
 
-    this.conquestMap = this.store.get();
+    this.conquestMap = new Map<string, Conquest>(); // this.store.get();
   }
 
   async findAll(): Promise<Conquest[]> {
