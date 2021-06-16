@@ -15,11 +15,124 @@ const getItemType = (sk: string) => {
   return itemTypes[(sk.match(/\#/g) || []).length];
 };
 
-export const parse = (
+export const parseConquest = (
   items: {
     [key: string]: AttributeValue;
   }[],
 ): Conquest[] => {
+  const { conquestArray, phaseArray, zoneArray, nodeArray } = parse(items);
+  const conquests: Conquest[] = conquestArray.map((c) =>
+    buildConquest(c, phaseArray, zoneArray, nodeArray),
+  );
+  return conquests;
+};
+
+export const parsePhase = (
+  conquestId: string,
+  items: {
+    [key: string]: AttributeValue;
+  }[],
+): Phase[] => {
+  const { phaseArray, zoneArray, nodeArray } = parse(items);
+  const phases: Phase[] = buildPhasesByConquest(
+    conquestId,
+    phaseArray,
+    zoneArray,
+    nodeArray,
+  );
+
+  return phases;
+};
+
+export const parseZone = (
+  phaseId: string,
+  items: {
+    [key: string]: AttributeValue;
+  }[],
+): Zone[] => {
+  const { zoneArray, nodeArray } = parse(items);
+  const zones: Zone[] = buildZonesByPhase(phaseId, zoneArray, nodeArray);
+  return zones;
+};
+
+export const parseNode = (
+  zoneId: string,
+  items: {
+    [key: string]: AttributeValue;
+  }[],
+): Node[] => {
+  const { nodeArray } = parse(items);
+  const nodes: Node[] = buildNodesByZone(zoneId, nodeArray);
+  return nodes;
+};
+
+const buildConquest = (
+  conquest: Conquest,
+  phaseArray: Phase[],
+  zoneArray: Zone[],
+  nodeArray: Node[],
+) => {
+  const phases = buildPhasesByConquest(
+    conquest.id,
+    phaseArray,
+    zoneArray,
+    nodeArray,
+  );
+  const toReturn: Conquest = {
+    ...conquest,
+    phases,
+  };
+
+  return toReturn;
+};
+
+const buildPhasesByConquest = (
+  conquestId: string,
+  phaseArray: Phase[],
+  zoneArray: Zone[],
+  nodeArray: Node[],
+): Phase[] => {
+  const toReturn: Phase[] = phaseArray
+    .filter((p) => p.conquestId === conquestId)
+    .map((p) => {
+      const zones = buildZonesByPhase(p.id, zoneArray, nodeArray);
+      return {
+        ...p,
+        zones,
+      };
+    });
+
+  return toReturn;
+};
+
+const buildZonesByPhase = (
+  phaseId: string,
+  zoneArray: Zone[],
+  nodeArray: Node[],
+): Zone[] => {
+  const toReturn: Zone[] = zoneArray
+    .filter((z) => z.phaseId === phaseId)
+    .map((z): Zone => {
+      const nodes = buildNodesByZone(z.id, nodeArray);
+      return {
+        ...z,
+        nodes,
+      };
+    });
+
+  return toReturn;
+};
+
+const buildNodesByZone = (zoneId: string, nodeArray: Node[]): Node[] => {
+  const toReturn: Node[] = nodeArray.filter((n) => n.zoneId === zoneId);
+  return toReturn;
+};
+
+const parse = (
+  items: {
+    [key: string]: AttributeValue;
+  }[],
+) => {
   const conquestArray: Conquest[] = [];
   const phaseArray: Phase[] = [];
   const zoneArray: Zone[] = [];
@@ -84,71 +197,5 @@ export const parse = (
     return r;
   });
 
-  const conquests: Conquest[] = conquestArray.map((c) =>
-    parseConquest(c, phaseArray, zoneArray, nodeArray),
-  );
-
-  return conquests;
-};
-
-const parseConquest = (
-  conquest: Conquest,
-  phaseArray: Phase[],
-  zoneArray: Zone[],
-  nodeArray: Node[],
-) => {
-  const phases = parsePhasesByConquest(
-    conquest.id,
-    phaseArray,
-    zoneArray,
-    nodeArray,
-  );
-  const toReturn: Conquest = {
-    ...conquest,
-    phases,
-  };
-
-  return toReturn;
-};
-
-const parsePhasesByConquest = (
-  conquestId: string,
-  phaseArray: Phase[],
-  zoneArray: Zone[],
-  nodeArray: Node[],
-): Phase[] => {
-  const toReturn: Phase[] = phaseArray
-    .filter((p) => p.conquestId === conquestId)
-    .map((p) => {
-      const zones = parseZonesByPhase(p.id, zoneArray, nodeArray);
-      return {
-        ...p,
-        zones,
-      };
-    });
-
-  return toReturn;
-};
-
-const parseZonesByPhase = (
-  phaseId: string,
-  zoneArray: Zone[],
-  nodeArray: Node[],
-): Zone[] => {
-  const toReturn: Zone[] = zoneArray
-    .filter((z) => z.phaseId === phaseId)
-    .map((z): Zone => {
-      const nodes = parseNodesByZone(z.id, nodeArray);
-      return {
-        ...z,
-        nodes,
-      };
-    });
-
-  return toReturn;
-};
-
-const parseNodesByZone = (zoneId: string, nodeArray: Node[]): Node[] => {
-  const toReturn: Node[] = nodeArray.filter((n) => n.zoneId === zoneId);
-  return toReturn;
+  return { conquestArray, phaseArray, zoneArray, nodeArray };
 };

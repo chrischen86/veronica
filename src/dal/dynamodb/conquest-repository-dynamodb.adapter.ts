@@ -10,7 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { Conquest } from '../../conquest/interfaces/conquest.interface';
 import { ConquestRepository } from '../repository/conquest.repository';
 
-import { parse } from './conquests-items.parser';
+import { parseConquest } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import {
   marshallConquest,
@@ -35,7 +35,7 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
     };
 
     const conquests = await this.service.client.send(new QueryCommand(params));
-    const conquestsList = parse(conquests.Items);
+    const conquestsList = parseConquest(conquests.Items);
     return conquestsList;
   }
 
@@ -49,7 +49,7 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
-    const conquests = parse(data.Items);
+    const conquests = parseConquest(data.Items);
     return conquests[0];
   }
 
