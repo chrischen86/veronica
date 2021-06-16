@@ -1,0 +1,120 @@
+{
+  "Conquests": [
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "SK": { "S": "METADATA#e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "GSI1PK": { "S": "ALLIANCE#alphaflight" },
+          "GSI1SK": { "S": "2021-06-18T17:00:00.000Z" },
+          "id": { "S": "e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "allianceId": { "S": "alphaflight" },
+          "startDate": { "S": "2021-06-18T17:00:00.000Z" },
+          "endDate": { "S": "2021-06-22T17:00:00.000Z" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "SK": {
+            "S": "PHASE#afaeb986-26e7-4638-8d8e-65e7c1713278#NULL"
+          },
+          "id": { "S": "afaeb986-26e7-4638-8d8e-65e7c1713278" },
+          "conquestId": { "S": "e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "number": { "N": "1" },
+          "startDate": { "S": "2021-06-18T17:00:00.000Z" },
+          "endDate": { "S": "2021-06-18T19:00:00.000Z" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "SK": {
+            "S": "PHASE#afaeb986-26e7-4638-8d8e-65e7c1713278#ZONE#145b1b2e-cf7a-4435-9325-6f3aeacc98ea#NULL"
+          },
+          "id": { "S": "145b1b2e-cf7a-4435-9325-6f3aeacc98ea" },
+          "phaseId": { "S": "afaeb986-26e7-4638-8d8e-65e7c1713278" },
+          "number": { "N": "1" },
+          "orders": { "S": "FILL" },
+          "status": { "S": "OPEN" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "SK": {
+            "S": "PHASE#afaeb986-26e7-4638-8d8e-65e7c1713278#ZONE#145b1b2e-cf7a-4435-9325-6f3aeacc98ea#NODE#20f23c36-e78d-43c8-8768-4be24afa205a"
+          },
+          "id": { "S": "20f23c36-e78d-43c8-8768-4be24afa205a" },
+          "zoneId": { "S": "145b1b2e-cf7a-4435-9325-6f3aeacc98ea" },
+          "number": { "N": "1" },
+          "ownerId": { "S": "PulsarShock" },
+          "status": { "S": "1" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#e03d1e22-fb5a-4da1-b7e7-f8767c778f1f" },
+          "SK": {
+            "S": "PHASE#afaeb986-26e7-4638-8d8e-65e7c1713278#ZONE#145b1b2e-cf7a-4435-9325-6f3aeacc98ea#NODE#38ec5207-85b8-4718-860e-62353f568d51"
+          },
+          "id": { "S": "38ec5207-85b8-4718-860e-62353f568d51" },
+          "zoneId": { "S": "145b1b2e-cf7a-4435-9325-6f3aeacc98ea" },
+          "number": { "N": "2" },
+          "ownerId": { "S": "Pulse" },
+          "status": { "S": "0" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#8d6fe02a-8280-4be8-ba5e-bfde96ad5b34" },
+          "SK": { "S": "METADATA#8d6fe02a-8280-4be8-ba5e-bfde96ad5b34" },
+          "GSI1PK": { "S": "ALLIANCE#alphaflight" },
+          "GSI1SK": { "S": "2021-05-14T17:00:00.000Z" },
+          "id": { "S": "8d6fe02a-8280-4be8-ba5e-bfde96ad5b34" },
+          "allianceId": { "S": "alphaflight" },
+          "startDate": { "S": "2021-05-14T17:00:00.000Z" },
+          "endDate": { "S": "2021-05-15T17:00:00.000Z" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#7d97035e-32ea-4fa0-9777-c769e91182a6" },
+          "SK": { "S": "METADATA#7d97035e-32ea-4fa0-9777-c769e91182a6" },
+          "GSI1PK": { "S": "ALLIANCE#alphaflight" },
+          "GSI1SK": { "S": "2021-07-14T01:00:00.000Z" },
+          "id": { "S": "7d97035e-32ea-4fa0-9777-c769e91182a6" },
+          "allianceId": { "S": "alphaflight" },
+          "startDate": { "S": "2021-07-14T17:00:00.000Z" },
+          "endDate": { "S": "2021-07-15T17:00:00.000Z" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "PK": { "S": "CONQUEST#6a03c8ee-6d54-414a-83f0-77eed382edf3" },
+          "SK": { "S": "METADATA#6a03c8ee-6d54-414a-83f0-77eed382edf3" },
+          "GSI1PK": { "S": "ALLIANCE#xmen" },
+          "GSI1SK": { "S": "2021-06-14T17:00:00.000Z" },
+          "id": { "S": "6a03c8ee-6d54-414a-83f0-77eed382edf3" },
+          "allianceId": { "S": "xmen" },
+          "startDate": { "S": "2021-06-14T17:00:00.000Z" },
+          "endDate": { "S": "2021-06-15T17:00:00.000Z" }
+        }
+      }
+    }
+  ]
+}

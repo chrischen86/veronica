@@ -3,7 +3,7 @@ export interface Conquest {
   allianceId: string;
   startDate: Date;
   endDate: Date;
-  phases: Phase[];
+  phases?: Phase[];
 }
 
 export interface Phase {
