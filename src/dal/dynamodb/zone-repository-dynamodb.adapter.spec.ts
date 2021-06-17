@@ -58,7 +58,7 @@ xdescribe('ZoneRepositoryDynamoDbAdapter', () => {
       phaseId: '1',
       zoneId: '1',
       orders: ZoneOrders.Fill,
-      status: ZoneStatus.Lost,
+      status: ZoneStatus.Sealing,
     };
     const results = await service.update(zone);
     console.log(results);

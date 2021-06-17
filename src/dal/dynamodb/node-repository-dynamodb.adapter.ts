@@ -9,66 +9,82 @@ import {
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
 import { UpdateZoneDto } from 'src/conquest/interfaces/update-zone-dto.interface';
+import { NodeRepository } from 'src/conquest/repository/node.repository';
 import { ZoneRepository } from 'src/conquest/repository/zone.repository';
-import { Zone } from '../../conquest/interfaces/conquest.interface';
-import { parseZone } from './conquests-items.parser';
+import {
+  Node,
+  NodeStatus,
+  Zone,
+} from '../../conquest/interfaces/conquest.interface';
+import { parseNode, parseZone } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
+import { marshallNode, marshallNodeKey } from './marshall/node.marshall';
 import { marshallZone, marshallZoneKey } from './marshall/zone.marshall';
 
 @Injectable()
-export class ZoneRepositoryDynamoDbAdapter extends ZoneRepository {
+export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
   constructor(private readonly service: DynamoDbService) {
     super();
   }
 
-  async findAllOnPhase(conquestId: string, phaseId: string): Promise<Zone[]> {
+  async findAllOnZone(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+  ): Promise<Node[]> {
     const params: QueryCommandInput = {
       KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
       ExpressionAttributeValues: {
         ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: `PHASE#${phaseId}#ZONE#` },
+        ':sk': { S: `PHASE#${phaseId}#ZONE#${zoneId}` },
       },
       TableName: 'Conquests',
     };
 
     const zones = await this.service.client.send(new QueryCommand(params));
-    const zoneList = parseZone(phaseId, zones.Items);
+    const zoneList = parseNode(zoneId, zones.Items);
     return zoneList;
   }
 
-  async findOneOnPhaseById(
+  async findOneOnZoneById(
     conquestId: string,
     phaseId: string,
+    zoneId: string,
     id: string,
-  ): Promise<Zone> {
+  ): Promise<Node> {
     const params: QueryCommandInput = {
       KeyConditionExpression: 'PK = :pk AND SK =:sk',
       ExpressionAttributeValues: {
         ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: `PHASE#${phaseId}#ZONE#${id}#NULL` },
+        ':sk': { S: `PHASE#${phaseId}#ZONE#${zoneId}#NODE#${id}` },
       },
       TableName: 'Conquests',
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
-    const zones = parseZone(conquestId, data.Items);
-    return zones.length > 0 ? zones[0] : undefined;
+    const nodes = parseNode(zoneId, data.Items);
+    return nodes.length > 0 ? nodes[0] : undefined;
   }
 
-  async create(conquestId: string, zone: Zone): Promise<Zone> {
-    const item = marshallZone(conquestId, zone);
+  async create(conquestId: string, phaseId: string, node: Node): Promise<Node> {
+    const item = marshallNode(conquestId, phaseId, node);
     const params: PutItemCommandInput = {
       TableName: 'Conquests',
       Item: item,
     };
     await this.service.client.send(new PutItemCommand(params));
-    return zone;
+    return node;
   }
 
-  async update(updateZoneDto: UpdateZoneDto) {
-    const { conquestId, phaseId, zoneId: id, status, orders } = updateZoneDto;
-
-    const key = marshallZoneKey(conquestId, phaseId, id);
+  async update(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId?: string,
+    status?: NodeStatus,
+  ) {
+    const key = marshallNodeKey(conquestId, phaseId, zoneId, nodeId);
     const updateExpression = [];
     let expressionAttributeNames = {};
     let expressionAttributeValues = {};
@@ -83,15 +99,15 @@ export class ZoneRepositoryDynamoDbAdapter extends ZoneRepository {
         ':status': status,
       };
     }
-    if (orders !== undefined) {
-      updateExpression.push('#orders = :orders');
+    if (ownerId !== undefined) {
+      updateExpression.push('#ownerId = :ownerId');
       expressionAttributeNames = {
         ...expressionAttributeNames,
-        '#orders': 'orders',
+        '#ownerId': 'ownerId',
       };
       expressionAttributeValues = {
         ...expressionAttributeValues,
-        ':orders': orders,
+        ':ownerId': ownerId,
       };
     }
     if (updateExpression.length <= 0) {
