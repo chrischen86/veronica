@@ -4,9 +4,16 @@ import { AppService } from './app.service';
 import { ConquestModule } from './conquest/conquest.module';
 import { SocketioModule } from './socketio/socketio.module';
 import { DalModule } from './dal/dal.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
 
 @Module({
-  imports: [ConquestModule, SocketioModule, DalModule],
+  imports: [
+    ConquestModule,
+    SocketioModule,
+    DalModule,
+    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

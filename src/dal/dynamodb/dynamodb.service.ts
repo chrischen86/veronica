@@ -4,17 +4,16 @@ import {
   QueryCommand,
   QueryCommandInput,
 } from '@aws-sdk/client-dynamodb';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DynamoDbService {
   public readonly client: DynamoDBClient;
   private readonly maxIterations = 10;
 
-  constructor() {
-    this.client = new DynamoDBClient({
-      region: 'us-east-1',
-      endpoint: 'http://localhost:8000',
-    });
+  constructor(private readonly configService: ConfigService) {
+    const databaseConfig = this.configService.get('database');
+    this.client = new DynamoDBClient({ ...databaseConfig });
   }
 
   async query(params: QueryCommandInput) {
