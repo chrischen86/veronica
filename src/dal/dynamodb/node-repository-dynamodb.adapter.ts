@@ -116,4 +116,19 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     };
     await this.service.client.send(new UpdateItemCommand(params));
   }
+
+  async clearOwner(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+  ) {
+    const key = marshallNodeKey(conquestId, phaseId, zoneId, nodeId);
+    const params: UpdateItemCommandInput = {
+      TableName: 'Conquests',
+      Key: key,
+      UpdateExpression: `remove ownerId`,
+    };
+    await this.service.client.send(new UpdateItemCommand(params));
+  }
 }

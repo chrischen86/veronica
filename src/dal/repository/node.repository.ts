@@ -25,4 +25,10 @@ export abstract class NodeRepository {
     ownerId?: string,
     status?: NodeStatus,
   );
+  abstract clearOwner(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+  );
 }

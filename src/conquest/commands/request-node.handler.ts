@@ -29,7 +29,17 @@ export class RequestNodeHandler implements ICommandHandler<RequestNodeCommand> {
       return;
     }
 
-    await this.repository.update(conquestId, phaseId, zoneId, nodeId, ownerId);
+    if (ownerId === undefined) {
+      await this.repository.clearOwner(conquestId, phaseId, zoneId, nodeId);
+    } else {
+      await this.repository.update(
+        conquestId,
+        phaseId,
+        zoneId,
+        nodeId,
+        ownerId,
+      );
+    }
     this.eventBus.publish(new NodeUpdatedEvent(conquestId, nodeId));
   }
 }

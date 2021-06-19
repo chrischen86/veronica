@@ -154,4 +154,13 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
     };
     this.conquestMap.set(conquestId, newConquest);
   }
+
+  async clearOwner(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+  ) {
+    return this.update(conquestId, phaseId, zoneId, nodeId, undefined);
+  }
 }
