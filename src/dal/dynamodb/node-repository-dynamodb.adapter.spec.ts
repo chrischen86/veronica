@@ -1,15 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  Node,
-  NodeStatus,
-  Zone,
-  ZoneOrders,
-  ZoneStatus,
-} from 'src/conquest/interfaces/conquest.interface';
-import { UpdateZoneDto } from 'src/conquest/interfaces/update-zone-dto.interface';
+import { Node, NodeStatus } from 'src/conquest/interfaces/conquest.interface';
 import { DynamoDbService } from './dynamodb.service';
 import { NodeRepositoryDynamoDbAdapter } from './node-repository-dynamodb.adapter';
-import { ZoneRepositoryDynamoDbAdapter } from './zone-repository-dynamodb.adapter';
 
 describe('NodeRepositoryDynamoDbAdapter', () => {
   let service: NodeRepositoryDynamoDbAdapter;

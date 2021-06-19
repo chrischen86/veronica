@@ -39,6 +39,7 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
     return conquestsList;
   }
 
+  //Returns all related conquest information
   async findOneById(id: string): Promise<Conquest> {
     const params: QueryCommandInput = {
       KeyConditionExpression: 'PK = :pk',
@@ -48,8 +49,8 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
       TableName: 'Conquests',
     };
 
-    const data = await this.service.client.send(new QueryCommand(params));
-    const conquests = parseConquest(data.Items);
+    const items = await this.service.query(params);
+    const conquests = parseConquest(items);
     return conquests[0];
   }
 
