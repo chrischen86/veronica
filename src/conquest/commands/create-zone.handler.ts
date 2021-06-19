@@ -2,7 +2,7 @@ import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
 import { ZoneCreatedEvent } from '../events/zone-created.event';
 import { Zone, ZoneOrders, ZoneStatus } from '../interfaces/conquest.interface';
-import { ZoneRepository } from '../repository/zone.repository';
+import { ZoneRepository } from '../../dal/repository/zone.repository';
 import CreateZoneCommand from './create-zone.command';
 
 @CommandHandler(CreateZoneCommand)

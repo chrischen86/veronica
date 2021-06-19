@@ -1,4 +1,4 @@
-import { Node } from 'src/conquest/interfaces/conquest.interface';
+import { Node } from '../../../conquest/interfaces/conquest.interface';
 
 export const marshallNode = (
   conquestId: string,
@@ -6,14 +6,19 @@ export const marshallNode = (
   node: Node,
 ) => {
   const { id, zoneId, number, status, ownerId } = node;
-  return {
+  const toReturn = {
     ...marshallNodeKey(conquestId, phaseId, zoneId, id),
     id: { S: id },
     zoneId: { S: zoneId },
     number: { N: `${number}` },
     status: { N: `${status}` },
-    ownerId: { S: ownerId },
   };
+
+  if (ownerId !== undefined) {
+    toReturn['ownerId'] = { S: ownerId };
+  }
+
+  return toReturn;
 };
 
 export const marshallNodeKey = (

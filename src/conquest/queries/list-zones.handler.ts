@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Zone } from '../interfaces/conquest.interface';
-import { ZoneRepository } from '../repository/zone.repository';
+import { ZoneRepository } from '../../dal/repository/zone.repository';
 import { ListZonesQuery } from './list-zones.query';
 
 @QueryHandler(ListZonesQuery)

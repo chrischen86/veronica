@@ -1,4 +1,4 @@
-import { Node, NodeStatus } from '../interfaces/conquest.interface';
+import { Node, NodeStatus } from '../../conquest/interfaces/conquest.interface';
 
 export abstract class NodeRepository {
   abstract findAllOnZone(

@@ -1,4 +1,4 @@
-import { ZoneStatus } from 'src/conquest/interfaces/conquest.interface';
+import { ZoneStatus } from '../../conquest/interfaces/conquest.interface';
 
 export interface UpdateZoneStatusDto {
   conquestId: string;

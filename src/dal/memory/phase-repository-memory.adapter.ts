@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Conquest, Phase } from '../interfaces/conquest.interface';
-import MemoryStore from './memory.store';
-import { PhaseRepository } from './phase.repository';
+import { Conquest, Phase } from '../../conquest/interfaces/conquest.interface';
+import MemoryStore from '../repository/memory.store';
+import { PhaseRepository } from '../repository/phase.repository';
 
 @Injectable()
 export class PhaseRepositoryMemoryAdapter extends PhaseRepository {

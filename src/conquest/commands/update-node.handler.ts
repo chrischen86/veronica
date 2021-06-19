@@ -1,6 +1,6 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { NodeUpdatedEvent } from '../events/node-updated.event';
-import { NodeRepository } from '../repository/node.repository';
+import { NodeRepository } from '../../dal/repository/node.repository';
 import UpdateNodeCommand from './update-node.command';
 
 @CommandHandler(UpdateNodeCommand)

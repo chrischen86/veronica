@@ -4,7 +4,7 @@ import {
   Node,
   Phase,
   Zone,
-} from 'src/conquest/interfaces/conquest.interface';
+} from '../../conquest/interfaces/conquest.interface';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 const itemTypes = ['', '', 'PHASE', '', 'ZONE', 'NODE'];
@@ -100,7 +100,8 @@ const buildPhasesByConquest = (
         ...p,
         zones,
       };
-    });
+    })
+    .sort((a, b) => (b.startDate > a.startDate ? -1 : 1));
 
   return toReturn;
 };
@@ -118,13 +119,16 @@ const buildZonesByPhase = (
         ...z,
         nodes,
       };
-    });
+    })
+    .sort((a, b) => a.number - b.number);
 
   return toReturn;
 };
 
 const buildNodesByZone = (zoneId: string, nodeArray: Node[]): Node[] => {
-  const toReturn: Node[] = nodeArray.filter((n) => n.zoneId === zoneId);
+  const toReturn: Node[] = nodeArray
+    .filter((n) => n.zoneId === zoneId)
+    .sort((a, b) => a.number - b.number);
   return toReturn;
 };
 

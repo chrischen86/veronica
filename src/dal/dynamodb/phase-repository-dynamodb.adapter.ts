@@ -5,8 +5,8 @@ import {
   QueryCommandInput,
 } from '@aws-sdk/client-dynamodb';
 import { Injectable } from '@nestjs/common';
-import { PhaseRepository } from 'src/conquest/repository/phase.repository';
 import { Phase } from '../../conquest/interfaces/conquest.interface';
+import { PhaseRepository } from '../repository/phase.repository';
 import { parsePhase } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallPhase } from './marshall/phase.marshall';

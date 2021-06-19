@@ -4,7 +4,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { ConquestService } from 'src/conquest/conquest.service';
+import { ConquestService } from '../conquest/conquest.service';
 import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';

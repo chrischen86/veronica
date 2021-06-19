@@ -8,9 +8,9 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
-import { UpdateZoneDto } from 'src/conquest/interfaces/update-zone-dto.interface';
-import { ZoneRepository } from 'src/conquest/repository/zone.repository';
+import { UpdateZoneDto } from '../../conquest/interfaces/update-zone-dto.interface';
 import { Zone } from '../../conquest/interfaces/conquest.interface';
+import { ZoneRepository } from '../repository/zone.repository';
 import { parseZone } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallZone, marshallZoneKey } from './marshall/zone.marshall';

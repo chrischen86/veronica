@@ -1,4 +1,4 @@
-import { Zone } from 'src/conquest/interfaces/conquest.interface';
+import { Zone } from '../../../conquest/interfaces/conquest.interface';
 
 export const marshallZone = (conquestId: string, zone: Zone) => {
   const { id, phaseId, number, orders, status } = zone;

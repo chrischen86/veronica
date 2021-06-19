@@ -1,4 +1,4 @@
-import { Phase } from '../interfaces/conquest.interface';
+import { Phase } from '../../conquest/interfaces/conquest.interface';
 
 export abstract class PhaseRepository {
   abstract findAllOnConquest(conquestId: string): Promise<Phase[]>;

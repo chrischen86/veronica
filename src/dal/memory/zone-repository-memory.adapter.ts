@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import {
   Conquest,
-  Node,
-  NodeStatus,
   Phase,
   Zone,
-} from '../interfaces/conquest.interface';
-import MemoryStore from './memory.store';
-import { NodeRepository } from './node.repository';
+} from '../../conquest/interfaces/conquest.interface';
+import { UpdateZoneDto } from '../../conquest/interfaces/update-zone-dto.interface';
+import MemoryStore from '../repository/memory.store';
+import { ZoneRepository } from '../../dal/repository/zone.repository';
 
 @Injectable()
-export class NodeRepositoryMemoryAdapter extends NodeRepository {
+export class ZoneRepositoryMemoryAdapter extends ZoneRepository {
   private conquestMap: Map<string, Conquest>;
 
   constructor(private readonly store: MemoryStore) {
@@ -18,11 +17,7 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
     this.conquestMap = this.store.get();
   }
 
-  async findAllOnZone(
-    conquestId: string,
-    phaseId: string,
-    zoneId: string,
-  ): Promise<Node[]> {
+  async findAllOnPhase(conquestId: string, phaseId: string): Promise<Zone[]> {
     if (!this.conquestMap.has(conquestId)) {
       return [];
     }
@@ -32,21 +27,15 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
     if (phase === undefined) {
       return null;
     }
-    const { zones } = phase;
-    const zone = zones.find((z) => z.id === zoneId);
-    if (zone === undefined) {
-      return null;
-    }
 
-    return zone.nodes;
+    return phase.zones;
   }
 
-  async findOneOnZoneById(
+  async findOneOnPhaseById(
     conquestId: string,
     phaseId: string,
-    zoneId: string,
     id: string,
-  ): Promise<Node> {
+  ): Promise<Zone> {
     if (!this.conquestMap.has(conquestId)) {
       return null;
     }
@@ -56,39 +45,24 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
     if (phase === undefined) {
       return null;
     }
-    const { zones } = phase;
-    const zone = zones.find((z) => z.id === zoneId);
-    if (zone === undefined) {
-      return null;
-    }
-    return zone.nodes.find((n) => n.id === id);
+    return phase.zones.find((p) => p.id === id);
   }
 
-  async create(conquestId: string, phaseId: string, node: Node): Promise<Node> {
+  async create(conquestId: string, zone: Zone): Promise<Zone> {
     if (!this.conquestMap.has(conquestId)) {
       return null;
     }
 
+    const { phaseId } = zone;
     const conquest = this.conquestMap.get(conquestId);
     const { phases } = conquest;
     const phase = phases.find((p) => p.id === phaseId);
     if (phase === undefined) {
       return null;
     }
-    const { zones } = phase;
-    const { zoneId } = node;
-    const zone = zones.find((z) => z.id === zoneId);
-    if (zone === undefined) {
-      return null;
-    }
-    const updatedZone: Zone = {
-      ...zone,
-      nodes: [...zone.nodes, node],
-    };
-    const updatedZones = zones.map((z) => (z.id === zoneId ? updatedZone : z));
     const updatedPhase: Phase = {
       ...phase,
-      zones: updatedZones,
+      zones: [...phase.zones, zone],
     };
     const updatedPhases = phases.map((p) =>
       p.id === phaseId ? updatedPhase : p,
@@ -100,14 +74,9 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
     this.conquestMap.set(conquestId, newConquest);
   }
 
-  async update(
-    conquestId: string,
-    phaseId: string,
-    zoneId: string,
-    nodeId: string,
-    ownerId?: string,
-    status?: NodeStatus,
-  ) {
+  update(updateZoneDto: UpdateZoneDto) {
+    const { conquestId, phaseId, zoneId: id, status, orders } = updateZoneDto;
+
     if (!this.conquestMap.has(conquestId)) {
       return null;
     }
@@ -119,28 +88,18 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
       return null;
     }
     const { zones } = phase;
-    const zone = zones.find((z) => z.id === zoneId);
+    const zone = zones.find((z) => z.id === id);
     if (zone === undefined) {
       return null;
     }
-    const { nodes } = zone;
-    const node = nodes.find((n) => n.id === nodeId);
-    if (node === undefined) {
-      return null;
-    }
 
-    const updatedNode = {
-      ...node,
-      ownerId,
-      status: status ?? node.status,
-    };
-
-    const updatedNodes = nodes.map((n) => (n.id === node.id ? updatedNode : n));
     const updatedZone: Zone = {
       ...zone,
-      nodes: updatedNodes,
+      ...(orders !== undefined && { orders }),
+      ...(status !== undefined && { status }),
     };
-    const updatedZones = zones.map((z) => (z.id === zoneId ? updatedZone : z));
+
+    const updatedZones = zones.map((z) => (z.id === id ? updatedZone : z));
     const updatedPhase: Phase = {
       ...phase,
       zones: updatedZones,

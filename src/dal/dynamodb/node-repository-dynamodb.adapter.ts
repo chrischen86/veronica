@@ -8,18 +8,11 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
-import { UpdateZoneDto } from 'src/conquest/interfaces/update-zone-dto.interface';
-import { NodeRepository } from 'src/conquest/repository/node.repository';
-import { ZoneRepository } from 'src/conquest/repository/zone.repository';
-import {
-  Node,
-  NodeStatus,
-  Zone,
-} from '../../conquest/interfaces/conquest.interface';
-import { parseNode, parseZone } from './conquests-items.parser';
+import { Node, NodeStatus } from '../../conquest/interfaces/conquest.interface';
+import { NodeRepository } from '../repository/node.repository';
+import { parseNode } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallNode, marshallNodeKey } from './marshall/node.marshall';
-import { marshallZone, marshallZoneKey } from './marshall/zone.marshall';
 
 @Injectable()
 export class NodeRepositoryDynamoDbAdapter extends NodeRepository {

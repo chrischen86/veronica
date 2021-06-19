@@ -1,4 +1,4 @@
-import { ZoneOrders } from 'src/conquest/interfaces/conquest.interface';
+import { ZoneOrders } from '../../conquest/interfaces/conquest.interface';
 
 export interface UpdateZoneOrdersDto {
   conquestId: string;

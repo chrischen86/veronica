@@ -1,6 +1,5 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { ConquestRepository } from 'src/dal/repository/conquest.repository';
-
+import { ConquestRepository } from '../../dal/repository/conquest.repository';
 import DeleteConquestCommand from './delete-conquest.command';
 
 @CommandHandler(DeleteConquestCommand)

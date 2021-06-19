@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
+import { PhaseRepository } from '../../dal/repository/phase.repository';
 import { Phase } from '../interfaces/conquest.interface';
-import { PhaseRepository } from '../repository/phase.repository';
 import { ListPhasesQuery } from './list-phases.query';
 
 @QueryHandler(ListPhasesQuery)

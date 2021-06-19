@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { NodeRepository } from '../../dal/repository/node.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { Node } from '../interfaces/conquest.interface';
-import { NodeRepository } from '../repository/node.repository';
 import CreateNodeCommand from './create-node.command';
 
 @CommandHandler(CreateNodeCommand)

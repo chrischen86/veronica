@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { ConquestRepository } from 'src/dal/repository/conquest.repository';
+import { ConquestRepository } from '../../dal/repository/conquest.repository';
 import { GetConquestQuery } from './get-conquest.query';
 
 @QueryHandler(GetConquestQuery)

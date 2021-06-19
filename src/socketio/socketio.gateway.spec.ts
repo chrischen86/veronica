@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConquestModule } from 'src/conquest/conquest.module';
+import { ConquestModule } from '../conquest/conquest.module';
 import { SocketioGateway } from './socketio.gateway';
 
 describe('SocketioGateway', () => {

@@ -1,4 +1,4 @@
-import { Phase } from 'src/conquest/interfaces/conquest.interface';
+import { Phase } from '../../../conquest/interfaces/conquest.interface';
 
 export const marshallPhase = (phase: Phase) => {
   const { id, conquestId, number, startDate, endDate } = phase;

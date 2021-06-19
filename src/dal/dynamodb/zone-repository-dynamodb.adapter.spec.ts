@@ -3,8 +3,8 @@ import {
   Zone,
   ZoneOrders,
   ZoneStatus,
-} from 'src/conquest/interfaces/conquest.interface';
-import { UpdateZoneDto } from 'src/conquest/interfaces/update-zone-dto.interface';
+} from '../../conquest/interfaces/conquest.interface';
+import { UpdateZoneDto } from '../../conquest/interfaces/update-zone-dto.interface';
 import { DynamoDbService } from './dynamodb.service';
 import { ZoneRepositoryDynamoDbAdapter } from './zone-repository-dynamodb.adapter';
 

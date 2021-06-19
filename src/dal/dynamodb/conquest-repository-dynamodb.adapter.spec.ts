@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Conquest } from 'src/conquest/interfaces/conquest.interface';
+import { Conquest } from '../../conquest/interfaces/conquest.interface';
 import { ConquestRepositoryDynamoDbAdapter } from './conquest-repository-dynamodb.adapter';
 import { DynamoDbService } from './dynamodb.service';
 

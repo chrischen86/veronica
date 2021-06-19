@@ -1,7 +1,7 @@
 import { CommandHandler, EventPublisher, ICommandHandler } from '@nestjs/cqrs';
 import { v4 as uuidv4 } from 'uuid';
+import { PhaseRepository } from '../../dal/repository/phase.repository';
 import { Phase } from '../interfaces/conquest.interface';
-import { PhaseRepository } from '../repository/phase.repository';
 import SetupPhaseCommand from './setup-phase.command';
 
 @CommandHandler(SetupPhaseCommand)

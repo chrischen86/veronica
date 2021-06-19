@@ -1,7 +1,7 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { ZoneOrdersUpdatedEvent } from '../events/zone-orders-updated.event';
 import { UpdateZoneDto } from '../interfaces/update-zone-dto.interface';
-import { ZoneRepository } from '../repository/zone.repository';
+import { ZoneRepository } from '../../dal/repository/zone.repository';
 import UpdateZoneOrdersCommand from './update-zone-orders.command';
 
 @CommandHandler(UpdateZoneOrdersCommand)

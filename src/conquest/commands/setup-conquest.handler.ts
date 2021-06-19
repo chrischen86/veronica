@@ -3,7 +3,7 @@ import { ConquestCreatedEvent } from '../events/conquest-created.event';
 import { Conquest } from '../interfaces/conquest.interface';
 import SetupConquestCommand from './setup-conquest.command';
 import { v4 as uuidv4 } from 'uuid';
-import { ConquestRepository } from 'src/dal/repository/conquest.repository';
+import { ConquestRepository } from '../../dal/repository/conquest.repository';
 
 @CommandHandler(SetupConquestCommand)
 export class SetupConquestHandler
