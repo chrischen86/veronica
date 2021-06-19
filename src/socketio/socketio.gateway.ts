@@ -9,6 +9,7 @@ import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';
 import { SetupZoneDto } from './interfaces/setup-zone-dto.interface';
+import { UpdateNodeDto } from './interfaces/update-node-dto.interface';
 import { UpdateZoneOrdersDto } from './interfaces/update-zone-orders-dto.interface';
 import { UpdateZoneStatusDto } from './interfaces/update-zone-status-dto.interface';
 
@@ -88,6 +89,24 @@ export class SocketioGateway {
         message: 'Node is assigned to another',
       };
     }
+
+    return {
+      status: 'ok',
+    };
+  }
+
+  @SubscribeMessage('updateNode')
+  async handleUpdateNode(socket: Socket, payload: UpdateNodeDto) {
+    console.log('UpdateNode Message...');
+    const { conquestId, phaseId, zoneId, nodeId, ownerId, status } = payload;
+    await this.service.updateNode(
+      conquestId,
+      phaseId,
+      zoneId,
+      nodeId,
+      ownerId,
+      status,
+    );
 
     return {
       status: 'ok',
