@@ -5,7 +5,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConquestService } from '../conquest/conquest.service';
-import { OwnerAlreadyAssignedWsException } from './exceptions/owner-already-assigned.exception';
 import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';
