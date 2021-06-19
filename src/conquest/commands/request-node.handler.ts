@@ -13,26 +13,10 @@ export class RequestNodeHandler implements ICommandHandler<RequestNodeCommand> {
   async execute(command: RequestNodeCommand) {
     console.log('RequestNodeCommand...');
     const { conquestId, phaseId, zoneId, nodeId, ownerId } = command;
-    const node = await this.repository.findOneOnZoneById(
-      conquestId,
-      phaseId,
-      zoneId,
-      nodeId,
-    );
-
-    if (node === null) {
-      return;
-    }
-
-    if (node.ownerId !== undefined && ownerId !== undefined) {
-      //Somebody called this node first
-      return;
-    }
-
     if (ownerId === undefined) {
       await this.repository.clearOwner(conquestId, phaseId, zoneId, nodeId);
     } else {
-      await this.repository.update(
+      await this.repository.requestNode(
         conquestId,
         phaseId,
         zoneId,

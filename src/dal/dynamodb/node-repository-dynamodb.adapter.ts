@@ -131,4 +131,25 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     };
     await this.service.client.send(new UpdateItemCommand(params));
   }
+
+  async requestNode(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId: string,
+  ) {
+    const key = marshallNodeKey(conquestId, phaseId, zoneId, nodeId);
+    const params: UpdateItemCommandInput = {
+      TableName: 'Conquests',
+      Key: key,
+      UpdateExpression: `set #ownerId = :ownerId`,
+      ExpressionAttributeNames: {
+        '#ownerId': 'ownerId',
+      },
+      ExpressionAttributeValues: marshall({ ':ownerId': ownerId }),
+      ConditionExpression: 'attribute_not_exists(#ownerId)',
+    };
+    await this.service.client.send(new UpdateItemCommand(params));
+  }
 }

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConquestService } from '../conquest/conquest.service';
+import { OwnerAlreadyAssignedWsException } from './exceptions/owner-already-assigned.exception';
 import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';
@@ -54,59 +55,43 @@ export class SocketioGateway {
     // }
 
     await this.service.createZone(conquestId, phaseId, zone, holds);
-    const updatedConquest = await this.service.findOneConquest(conquestId);
-
     return {
       status: 'ok',
-      conquestState: updatedConquest,
     };
   }
 
   @SubscribeMessage('assignNode')
   async handleAssignNode(socket: Socket, payload: AssignNodeDto) {
     console.log('AssignNode Message...');
+    let isRejected = false;
     const { conquestId, phaseId, zoneId, nodeId, ownerId } = payload;
-    await this.service.requestNode(
-      conquestId,
-      phaseId,
-      zoneId,
-      nodeId,
-      ownerId,
-    );
-    const updatedConquest = await this.service.findOneConquest(conquestId);
-    const { phases } = updatedConquest;
-    const phase = phases.find((p) => p.id === phaseId);
-
-    const errorResponse = {
-      status: 'error',
-      conquestState: updatedConquest,
-    };
-
-    if (phase === undefined) {
-      return errorResponse;
-    }
-    const { zones } = phase;
-    const zone = zones.find((z) => z.id === zoneId);
-    if (zone === undefined) {
-      return errorResponse;
-    }
-    const { nodes } = zone;
-    const node = nodes.find((n) => n.id === nodeId);
-    if (node === undefined) {
-      return errorResponse;
+    try {
+      await this.service.requestNode(
+        conquestId,
+        phaseId,
+        zoneId,
+        nodeId,
+        ownerId,
+      );
+    } catch (ex) {
+      const { name } = ex;
+      if (name === 'ConditionalCheckFailedException') {
+        isRejected = true;
+      } else {
+        throw ex;
+      }
     }
 
-    if (ownerId !== node.ownerId) {
+    //Handle exception ourselves as rejection state in UI is local
+    if (isRejected) {
       return {
         status: 'warn',
         message: 'Node is assigned to another',
-        conquestState: updatedConquest,
       };
     }
 
     return {
       status: 'ok',
-      conquestState: updatedConquest,
     };
   }
 
@@ -115,10 +100,8 @@ export class SocketioGateway {
     console.log('UpdateZoneOrders Message...');
     const { conquestId, phaseId, zoneId, orders } = payload;
     await this.service.updateZone(conquestId, phaseId, zoneId, orders);
-    const updatedConquest = await this.service.findOneConquest(conquestId);
     return {
       status: 'ok',
-      conquestState: updatedConquest,
     };
   }
 
@@ -127,10 +110,8 @@ export class SocketioGateway {
     console.log('UpdateZoneStatus Message...');
     const { conquestId, phaseId, zoneId, status } = payload;
     await this.service.updateZoneStatus(conquestId, phaseId, zoneId, status);
-    const updatedConquest = await this.service.findOneConquest(conquestId);
     return {
       status: 'ok',
-      conquestState: updatedConquest,
     };
   }
 

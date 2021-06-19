@@ -163,4 +163,14 @@ export class NodeRepositoryMemoryAdapter extends NodeRepository {
   ) {
     return this.update(conquestId, phaseId, zoneId, nodeId, undefined);
   }
+
+  async requestNode(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId: string,
+  ) {
+    return this.update(conquestId, phaseId, zoneId, nodeId, ownerId);
+  }
 }

@@ -31,4 +31,11 @@ export abstract class NodeRepository {
     zoneId: string,
     nodeId: string,
   );
+  abstract requestNode(
+    conquestId: string,
+    phaseId: string,
+    zoneId: string,
+    nodeId: string,
+    ownerId: string,
+  );
 }
