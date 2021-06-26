@@ -44,9 +44,12 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
         SK: { S: `USER#${userId}` },
       },
     };
-
     const data = await this.service.client.send(new GetItemCommand(params));
-    const users = this.parseUsers([data.Item]);
+    const { Item } = data;
+    if (Item === undefined) {
+      return null;
+    }
+    const users = this.parseUsers([Item]);
     return users[0];
   }
 
@@ -67,21 +70,11 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     }
 
     const key = marshallUserKey(id);
-    const updateExpression = [
-      '#allianceId = :allianceId',
-      '#gsi2pk = :gsi2pk',
-      '#gsi2sk = :gsi2sk',
-    ];
-    const expressionAttributeNames = {
-      '#allianceId': 'allianceId',
-      '#gsi2pk': Schema.Keys.GSI2PK,
-      '#gsi2sk': Schema.Keys.GSI2SK,
-    };
-    const expressionAttributeValues = {
-      ':allianceId': allianceId,
-      ':gsi2pk': `ALLIANCE#${allianceId}`,
-      ':gsi2sk': `USER#${name}`,
-    };
+    const {
+      updateExpression,
+      expressionAttributeNames,
+      expressionAttributeValues,
+    } = this.getUpdateAllianceParams(allianceId, name);
 
     const params: UpdateItemCommandInput = {
       TableName: Schema.Table.Name,
@@ -112,6 +105,76 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     const data = await this.service.client.send(new QueryCommand(params));
     const users = this.parseUsers(data.Items);
     return users;
+  }
+
+  async updateProfile(user: User) {
+    const { id, name, allianceId } = user;
+    const key = marshallUserKey(id);
+    const updateExpression = [
+      '#name = :name',
+      '#gsi1pk = :gsi1pk',
+      '#gsi1sk = :gsi1sk',
+    ];
+    let expressionAttributeNames = {
+      '#name': 'name',
+      '#gsi1pk': Schema.Keys.GSI1PK,
+      '#gsi1sk': Schema.Keys.GSI1SK,
+    };
+    let expressionAttributeValues = {
+      ':name': name,
+      ':gsi1pk': `USER`,
+      ':gsi1sk': `USER#${name}`,
+    };
+
+    if (allianceId !== undefined) {
+      const {
+        updateExpression: allianceUpdateExpression,
+        expressionAttributeNames: allianceExpressionAttributeNames,
+        expressionAttributeValues: allianceExpressionAttributeValues,
+      } = this.getUpdateAllianceParams(allianceId, name);
+      updateExpression.push(...allianceUpdateExpression);
+      expressionAttributeNames = {
+        ...expressionAttributeNames,
+        ...allianceExpressionAttributeNames,
+      };
+      expressionAttributeValues = {
+        ...expressionAttributeValues,
+        ...allianceExpressionAttributeValues,
+      };
+    }
+
+    const params: UpdateItemCommandInput = {
+      TableName: Schema.Table.Name,
+      Key: key,
+      UpdateExpression: `set ${updateExpression.join(', ')}`,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: marshall(expressionAttributeValues),
+    };
+    await this.service.client.send(new UpdateItemCommand(params));
+  }
+
+  getUpdateAllianceParams(allianceId, name) {
+    const updateExpression = [
+      '#allianceId = :allianceId',
+      '#gsi2pk = :gsi2pk',
+      '#gsi2sk = :gsi2sk',
+    ];
+    const expressionAttributeNames = {
+      '#allianceId': 'allianceId',
+      '#gsi2pk': Schema.Keys.GSI2PK,
+      '#gsi2sk': Schema.Keys.GSI2SK,
+    };
+    const expressionAttributeValues = {
+      ':allianceId': allianceId,
+      ':gsi2pk': `ALLIANCE#${allianceId}`,
+      ':gsi2sk': `USER#${name}`,
+    };
+
+    return {
+      updateExpression,
+      expressionAttributeNames,
+      expressionAttributeValues,
+    };
   }
 
   parseUsers(

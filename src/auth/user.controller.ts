@@ -1,22 +1,66 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDto } from './interfaces/create-user-dto.interface';
+import { UpdateProfileDto } from './interfaces/update-profile-dto.interface';
 import { UserService } from './user.service';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.service.createUser(createUserDto);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(@Param('id') userId: string) {
-    return this.service.findOneUser(userId);
+    const user = await this.service.findOneUser(userId);
+    if (user === null) {
+      throw new NotFoundException();
+    }
+    return user;
+  }
+
+  @Post('/verify')
+  async verify(@Request() req) {
+    const {
+      user: { sub },
+    } = req;
+    if (sub === undefined) {
+      return { message: 'error' };
+    }
+    const user = await this.service.findOneUser(sub);
+    if (user === null) {
+      return { id: sub, status: 'NOT_INITIALIZED' };
+    }
+    return user;
+  }
+
+  @Patch()
+  async updateProfile(@Body() dto: UpdateProfileDto, @Request() req) {
+    const {
+      user: { sub },
+    } = req;
+    if (sub === undefined || dto.name === undefined) {
+      return { message: 'error' };
+    }
+
+    //Prevent hijacking someone else's id
+    dto.id = sub;
+    await this.service.updateProfile(dto);
+    return this.service.findOneUser(sub);
   }
 
   //   @Delete(':id')

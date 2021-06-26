@@ -95,4 +95,26 @@ describe('UserRepositoryDynamoDbAdapter', () => {
     expect(actualUser).toBeDefined();
     expect(actualUser.allianceId).toEqual(allianceId);
   });
+
+  it('should create user then updateProfile with new name and alliance', async () => {
+    const id = uuidv4();
+    const name = `Username${getRandomInt(9999)}`;
+    const user: User = {
+      id,
+      name,
+    };
+    await service.create(user);
+
+    const allianceId = uuidv4();
+    //const allianceId = 'b6448b1a-df14-4bf3-bad7-e255e7266e7c';
+    user.allianceId = allianceId;
+    const updatedName = user.name + '-Updated';
+    user.name = updatedName;
+    await service.updateProfile(user);
+    const actualUser = await service.findOneById(user.id);
+
+    expect(actualUser).toBeDefined();
+    expect(actualUser.allianceId).toEqual(allianceId);
+    expect(actualUser.name).toEqual(updatedName);
+  });
 });

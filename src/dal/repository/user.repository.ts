@@ -7,4 +7,5 @@ export abstract class UserRepository {
   //abstract delete(conquestId: string);
   abstract findAllByAllianceId(allianceId: string): Promise<User[]>;
   abstract joinAlliance(user: User);
+  abstract updateProfile(user: User);
 }
