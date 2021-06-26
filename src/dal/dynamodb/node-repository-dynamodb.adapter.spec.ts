@@ -1,15 +1,16 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Node, NodeStatus } from '../../conquest/interfaces/conquest.interface';
 import { DynamoDbService } from './dynamodb.service';
 import { NodeRepositoryDynamoDbAdapter } from './node-repository-dynamodb.adapter';
 
-describe('NodeRepositoryDynamoDbAdapter', () => {
+xdescribe('NodeRepositoryDynamoDbAdapter', () => {
   let service: NodeRepositoryDynamoDbAdapter;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [DynamoDbService, NodeRepositoryDynamoDbAdapter],
-      //imports: [CqrsModule],
+      imports: [ConfigModule.forRoot({ isGlobal: true })],
     }).compile();
 
     service = module.get<NodeRepositoryDynamoDbAdapter>(
