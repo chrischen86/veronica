@@ -5,7 +5,7 @@ export const marshallConquest = (conquest: Conquest) => {
   const startDateString = startDate.toISOString();
   return {
     ...marshallConquestKey(id),
-    GSI1PK: { S: `ALLIANCE#${allianceId}` },
+    GSI1PK: { S: `AC#${allianceId}` },
     GSI1SK: { S: startDateString },
     id: { S: id },
     allianceId: { S: allianceId },
@@ -16,7 +16,7 @@ export const marshallConquest = (conquest: Conquest) => {
 
 export const marshallConquestKey = (id: string) => {
   return {
-    PK: { S: `CONQUEST#${id}` },
-    SK: { S: `METADATA#${id}` },
+    PK: { S: `CONQUEST` },
+    SK: { S: `CONQUEST#${id}#NULL` },
   };
 };

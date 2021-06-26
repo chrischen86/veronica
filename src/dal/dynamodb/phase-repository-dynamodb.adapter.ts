@@ -10,6 +10,7 @@ import { PhaseRepository } from '../repository/phase.repository';
 import { parsePhase } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallPhase } from './marshall/phase.marshall';
+import Schema from './schema.defintions';
 
 @Injectable()
 export class PhaseRepositoryDynamoDbAdapter extends PhaseRepository {
@@ -19,12 +20,16 @@ export class PhaseRepositoryDynamoDbAdapter extends PhaseRepository {
 
   async findAllOnConquest(conquestId: string): Promise<Phase[]> {
     const params: QueryCommandInput = {
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: '#pk = :pk AND begins_with(#sk, :sk)',
       ExpressionAttributeValues: {
-        ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: 'PHASE#' },
+        ':pk': { S: `CONQUEST` },
+        ':sk': { S: `CONQUEST#${conquestId}#PHASE#` },
       },
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+        '#sk': Schema.Keys.SK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const phases = await this.service.client.send(new QueryCommand(params));
@@ -34,12 +39,16 @@ export class PhaseRepositoryDynamoDbAdapter extends PhaseRepository {
 
   async findOneOnConquestById(conquestId: string, id: string): Promise<Phase> {
     const params: QueryCommandInput = {
-      KeyConditionExpression: 'PK = :pk AND SK =:sk',
+      KeyConditionExpression: '#pk = :pk AND #sk = :sk',
       ExpressionAttributeValues: {
-        ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: `PHASE#${id}#NULL` },
+        ':pk': { S: `CONQUEST` },
+        ':sk': { S: `CONQUEST#${conquestId}#PHASE#${id}#NULL` },
       },
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+        '#sk': Schema.Keys.SK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
@@ -50,7 +59,7 @@ export class PhaseRepositoryDynamoDbAdapter extends PhaseRepository {
   async create(phase: Phase): Promise<Phase> {
     const item = marshallPhase(phase);
     const params: PutItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Item: item,
     };
     await this.service.client.send(new PutItemCommand(params));

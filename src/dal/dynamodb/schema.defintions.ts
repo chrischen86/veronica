@@ -4,8 +4,8 @@ export default {
   },
 
   Keys: {
-    Pk: 'PK',
-    Sk: 'SK',
+    PK: 'PK',
+    SK: 'SK',
     GSI1PK: 'GSI1PK',
     GSI1SK: 'GSI1SK',
     GSI2PK: 'GSI2PK',

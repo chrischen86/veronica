@@ -7,11 +7,8 @@ import {
 } from '../../conquest/interfaces/conquest.interface';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 
-const itemTypes = ['', '', 'PHASE', '', 'ZONE', 'NODE'];
+const itemTypes = ['', '', 'CONQUEST', '', 'PHASE', '', 'ZONE', 'NODE'];
 const getItemType = (sk: string) => {
-  if (sk.startsWith('METADATA')) {
-    return 'CONQUEST';
-  }
   return itemTypes[(sk.match(/\#/g) || []).length];
 };
 

@@ -9,13 +9,13 @@ import {
 import { Injectable } from '@nestjs/common';
 import { Conquest } from '../../conquest/interfaces/conquest.interface';
 import { ConquestRepository } from '../repository/conquest.repository';
-
 import { parseConquest } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import {
   marshallConquest,
   marshallConquestKey,
 } from './marshall/conquest.marshall';
+import Schema from './schema.defintions';
 
 @Injectable()
 export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
@@ -25,13 +25,14 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
 
   async findAll(): Promise<Conquest[]> {
     const params: QueryCommandInput = {
-      IndexName: 'AllianceIndex',
-      KeyConditionExpression: 'GSI1PK = :pk',
+      KeyConditionExpression: '#pk = :pk',
       ExpressionAttributeValues: {
-        ':pk': { S: 'ALLIANCE#alphaflight' },
+        ':pk': { S: 'CONQUEST' },
       },
-      ScanIndexForward: false,
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const conquests = await this.service.client.send(new QueryCommand(params));
@@ -39,25 +40,49 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
     return conquestsList;
   }
 
-  //Returns all related conquest information
+  async findAllByAllianceId(allianceId: string): Promise<Conquest[]> {
+    const params: QueryCommandInput = {
+      IndexName: Schema.Indexes.GSI1,
+      KeyConditionExpression: '#gsi1pk = :pk',
+      ExpressionAttributeValues: {
+        ':pk': { S: `AC#${allianceId}` },
+      },
+      ExpressionAttributeNames: {
+        '#gsi1pk': Schema.Keys.GSI2PK,
+      },
+      ScanIndexForward: false,
+      TableName: Schema.Table.Name,
+    };
+
+    const conquests = await this.service.client.send(new QueryCommand(params));
+    const conquestsList = parseConquest(conquests.Items);
+    return conquestsList;
+  }
+
+  //Returns all related conquest information: Phases, Zones, Nodes
   async findOneById(id: string): Promise<Conquest> {
     const params: QueryCommandInput = {
-      KeyConditionExpression: 'PK = :pk',
+      KeyConditionExpression: '#pk = :pk AND begins_with(#sk, :sk)',
       ExpressionAttributeValues: {
-        ':pk': { S: `CONQUEST#${id}` },
+        ':pk': { S: `CONQUEST` },
+        ':sk': { S: `CONQUEST#${id}` },
       },
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+        '#sk': Schema.Keys.SK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const items = await this.service.query(params);
     const conquests = parseConquest(items);
-    return conquests[0];
+    return conquests.length === 1 ? conquests[0] : null;
   }
 
   async create(conquest: Conquest): Promise<Conquest> {
     const item = marshallConquest(conquest);
     const params: PutItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Item: item,
     };
     await this.service.client.send(new PutItemCommand(params));
@@ -67,7 +92,7 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
   async delete(conquestId: string) {
     const key = marshallConquestKey(conquestId);
     const params: DeleteItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Key: key,
     };
     await this.service.client.send(new DeleteItemCommand(params));

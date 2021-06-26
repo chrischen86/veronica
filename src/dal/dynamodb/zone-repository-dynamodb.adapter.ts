@@ -14,6 +14,7 @@ import { ZoneRepository } from '../repository/zone.repository';
 import { parseZone } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallZone, marshallZoneKey } from './marshall/zone.marshall';
+import Schema from './schema.defintions';
 
 @Injectable()
 export class ZoneRepositoryDynamoDbAdapter extends ZoneRepository {
@@ -23,12 +24,16 @@ export class ZoneRepositoryDynamoDbAdapter extends ZoneRepository {
 
   async findAllOnPhase(conquestId: string, phaseId: string): Promise<Zone[]> {
     const params: QueryCommandInput = {
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: '#pk = :pk AND begins_with(#sk, :sk)',
       ExpressionAttributeValues: {
-        ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: `PHASE#${phaseId}#ZONE#` },
+        ':pk': { S: `CONQUEST` },
+        ':sk': { S: `CONQUEST#${conquestId}#PHASE#${phaseId}#ZONE#` },
       },
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+        '#sk': Schema.Keys.SK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const zones = await this.service.client.send(new QueryCommand(params));
@@ -42,23 +47,27 @@ export class ZoneRepositoryDynamoDbAdapter extends ZoneRepository {
     id: string,
   ): Promise<Zone> {
     const params: QueryCommandInput = {
-      KeyConditionExpression: 'PK = :pk AND SK =:sk',
+      KeyConditionExpression: '#pk = :pk AND #sk = :sk',
       ExpressionAttributeValues: {
-        ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: `PHASE#${phaseId}#ZONE#${id}#NULL` },
+        ':pk': { S: `CONQUEST` },
+        ':sk': { S: `CONQUEST#${conquestId}#PHASE#${phaseId}#ZONE#${id}#NULL` },
       },
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+        '#sk': Schema.Keys.SK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
-    const zones = parseZone(conquestId, data.Items);
-    return zones.length > 0 ? zones[0] : undefined;
+    const zones = parseZone(phaseId, data.Items);
+    return zones.length > 0 ? zones[0] : null;
   }
 
   async create(conquestId: string, zone: Zone): Promise<Zone> {
     const item = marshallZone(conquestId, zone);
     const params: PutItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Item: item,
     };
     await this.service.client.send(new PutItemCommand(params));
@@ -99,7 +108,7 @@ export class ZoneRepositoryDynamoDbAdapter extends ZoneRepository {
     }
 
     const params: UpdateItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Key: key,
       UpdateExpression: `set ${updateExpression.join(', ')}`,
       ExpressionAttributeNames: expressionAttributeNames,

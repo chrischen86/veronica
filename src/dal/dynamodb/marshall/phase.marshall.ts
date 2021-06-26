@@ -14,7 +14,7 @@ export const marshallPhase = (phase: Phase) => {
 
 export const marshallPhaseKey = (conquestId: string, id: string) => {
   return {
-    PK: { S: `CONQUEST#${conquestId}` },
-    SK: { S: `PHASE#${id}#NULL` },
+    PK: { S: `CONQUEST` },
+    SK: { S: `CONQUEST#${conquestId}#PHASE#${id}#NULL` },
   };
 };

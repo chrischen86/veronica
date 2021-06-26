@@ -13,6 +13,7 @@ import { NodeRepository } from '../repository/node.repository';
 import { parseNode } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallNode, marshallNodeKey } from './marshall/node.marshall';
+import Schema from './schema.defintions';
 
 @Injectable()
 export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
@@ -26,12 +27,16 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     zoneId: string,
   ): Promise<Node[]> {
     const params: QueryCommandInput = {
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: '#pk = :pk AND begins_with(#sk, :sk)',
       ExpressionAttributeValues: {
-        ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: `PHASE#${phaseId}#ZONE#${zoneId}` },
+        ':pk': { S: `CONQUEST` },
+        ':sk': { S: `CONQUEST#${conquestId}#PHASE#${phaseId}#ZONE#${zoneId}` },
       },
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+        '#sk': Schema.Keys.SK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const zones = await this.service.client.send(new QueryCommand(params));
@@ -46,23 +51,29 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     id: string,
   ): Promise<Node> {
     const params: QueryCommandInput = {
-      KeyConditionExpression: 'PK = :pk AND SK =:sk',
+      KeyConditionExpression: '#pk = :pk AND #sk = :sk',
       ExpressionAttributeValues: {
-        ':pk': { S: `CONQUEST#${conquestId}` },
-        ':sk': { S: `PHASE#${phaseId}#ZONE#${zoneId}#NODE#${id}` },
+        ':pk': { S: `CONQUEST` },
+        ':sk': {
+          S: `CONQUEST#${conquestId}#PHASE#${phaseId}#ZONE#${zoneId}#NODE#${id}`,
+        },
       },
-      TableName: 'Conquests',
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+        '#sk': Schema.Keys.SK,
+      },
+      TableName: Schema.Table.Name,
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
     const nodes = parseNode(zoneId, data.Items);
-    return nodes.length > 0 ? nodes[0] : undefined;
+    return nodes.length > 0 ? nodes[0] : null;
   }
 
   async create(conquestId: string, phaseId: string, node: Node): Promise<Node> {
     const item = marshallNode(conquestId, phaseId, node);
     const params: PutItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Item: item,
     };
     await this.service.client.send(new PutItemCommand(params));
@@ -108,7 +119,7 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     }
 
     const params: UpdateItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Key: key,
       UpdateExpression: `set ${updateExpression.join(', ')}`,
       ExpressionAttributeNames: expressionAttributeNames,
@@ -125,7 +136,7 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
   ) {
     const key = marshallNodeKey(conquestId, phaseId, zoneId, nodeId);
     const params: UpdateItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Key: key,
       UpdateExpression: `remove ownerId`,
     };
@@ -141,7 +152,7 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
   ) {
     const key = marshallNodeKey(conquestId, phaseId, zoneId, nodeId);
     const params: UpdateItemCommandInput = {
-      TableName: 'Conquests',
+      TableName: Schema.Table.Name,
       Key: key,
       UpdateExpression: `set #ownerId = :ownerId`,
       ExpressionAttributeNames: {

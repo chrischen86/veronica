@@ -28,7 +28,9 @@ export const marshallNodeKey = (
   id: string,
 ) => {
   return {
-    PK: { S: `CONQUEST#${conquestId}` },
-    SK: { S: `PHASE#${phaseId}#ZONE#${zoneId}#NODE#${id}` },
+    PK: { S: `CONQUEST` },
+    SK: {
+      S: `CONQUEST#${conquestId}#PHASE#${phaseId}#ZONE#${zoneId}#NODE#${id}`,
+    },
   };
 };
