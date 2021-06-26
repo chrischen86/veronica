@@ -1,10 +1,14 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import {
+  OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConquestService } from '../conquest/conquest.service';
+import { SocketIoGuard } from './guards/socketio.guard';
 import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';
@@ -12,18 +16,38 @@ import { SetupZoneDto } from './interfaces/setup-zone-dto.interface';
 import { UpdateNodeDto } from './interfaces/update-node-dto.interface';
 import { UpdateZoneOrdersDto } from './interfaces/update-zone-orders-dto.interface';
 import { UpdateZoneStatusDto } from './interfaces/update-zone-status-dto.interface';
+import { ConnectedSocket } from './types';
 
+@UseGuards(SocketIoGuard)
 @WebSocketGateway()
-export class SocketioGateway {
+export class SocketioGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly service: ConquestService) {}
+  constructor(
+    private readonly service: ConquestService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async handleConnection(socket: Socket, ...args: any[]) {
+    const authorized = await SocketIoGuard.verifyToken(
+      this.jwtService,
+      socket,
+      socket.handshake.auth.token,
+    );
+    if (!authorized) {
+      //socket.disconnect();
+      //throw new WsException('Unauthorized user');
+      console.log('*******not authed');
+    }
+    console.log(`${socket.conn.userId} Connected to gateway`);
+  }
 
   @SubscribeMessage('join')
-  async handleJoin(socket: Socket, payload: JoinDto) {
+  async handleJoin(socket: ConnectedSocket, payload: JoinDto) {
     const { roomNumber } = payload;
-
+    console.log(socket.conn.token);
+    console.log(socket.conn.userId);
     const conquest = await this.service.findOneConquest(roomNumber);
     if (conquest === null) {
       return {
@@ -42,8 +66,9 @@ export class SocketioGateway {
   }
 
   @SubscribeMessage('setupZone')
-  async handleSetupZone(socket: Socket, payload: SetupZoneDto) {
+  async handleSetupZone(socket: ConnectedSocket, payload: SetupZoneDto) {
     console.log('SetupZoneMessage...');
+    console.log(socket.conn.userId);
     const { conquestId, phaseId, holds, zone } = payload;
 
     // const conquest = await this.service.findOneConquest(conquestId);

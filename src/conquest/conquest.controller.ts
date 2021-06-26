@@ -1,6 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ConquestService } from './conquest.service';
 import { CreateConquestDto } from './interfaces/create-conquest.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('conquest')
 export class ConquestController {
@@ -12,9 +21,9 @@ export class ConquestController {
     return this.service.createConquest(allianceId, startDate, endDate);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll() {
-    console.log('tset');
     return this.service.findAllConquest();
   }
 
