@@ -10,7 +10,7 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-describe('UserRepositoryDynamoDbAdapter', () => {
+xdescribe('UserRepositoryDynamoDbAdapter', () => {
   let service: UserRepositoryDynamoDbAdapter;
 
   beforeEach(async () => {

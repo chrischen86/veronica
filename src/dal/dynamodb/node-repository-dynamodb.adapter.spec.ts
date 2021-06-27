@@ -27,7 +27,7 @@ export const createNode = (
   };
 };
 
-describe('NodeRepositoryDynamoDbAdapter', () => {
+xdescribe('NodeRepositoryDynamoDbAdapter', () => {
   let service: NodeRepositoryDynamoDbAdapter;
   let conquestService: ConquestRepositoryDynamoDbAdapter;
   let phaseService: PhaseRepositoryDynamoDbAdapter;
