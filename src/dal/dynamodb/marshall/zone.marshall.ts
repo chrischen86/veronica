@@ -18,7 +18,7 @@ export const marshallZoneKey = (
   id: string,
 ) => {
   return {
-    PK: { S: `CONQUEST#${conquestId}` },
-    SK: { S: `PHASE#${phaseId}#ZONE#${id}#NULL` },
+    PK: { S: `CONQUEST` },
+    SK: { S: `CONQUEST#${conquestId}#PHASE#${phaseId}#ZONE#${id}#NULL` },
   };
 };

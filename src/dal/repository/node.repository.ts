@@ -37,5 +37,6 @@ export abstract class NodeRepository {
     zoneId: string,
     nodeId: string,
     ownerId: string,
+    ownerName: string,
   );
 }

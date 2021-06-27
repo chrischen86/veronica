@@ -5,6 +5,9 @@ import MemoryStore from '../repository/memory.store';
 
 @Injectable()
 export class ConquestRepositoryMemoryAdapter extends ConquestRepository {
+  findAllByAllianceId(allianceId: string): Promise<Conquest[]> {
+    throw new Error('Method not implemented.');
+  }
   private conquestMap: Map<string, Conquest>;
 
   constructor(private readonly store: MemoryStore) {

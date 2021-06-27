@@ -5,7 +5,7 @@ export const marshallNode = (
   phaseId: string,
   node: Node,
 ) => {
-  const { id, zoneId, number, status, ownerId } = node;
+  const { id, zoneId, number, status, ownerId, ownerName } = node;
   const toReturn = {
     ...marshallNodeKey(conquestId, phaseId, zoneId, id),
     id: { S: id },
@@ -16,6 +16,9 @@ export const marshallNode = (
 
   if (ownerId !== undefined) {
     toReturn['ownerId'] = { S: ownerId };
+  }
+  if (ownerName !== undefined) {
+    toReturn['ownerName'] = { S: ownerName };
   }
 
   return toReturn;
@@ -28,7 +31,9 @@ export const marshallNodeKey = (
   id: string,
 ) => {
   return {
-    PK: { S: `CONQUEST#${conquestId}` },
-    SK: { S: `PHASE#${phaseId}#ZONE#${zoneId}#NODE#${id}` },
+    PK: { S: `CONQUEST` },
+    SK: {
+      S: `CONQUEST#${conquestId}#PHASE#${phaseId}#ZONE#${zoneId}#NODE#${id}`,
+    },
   };
 };

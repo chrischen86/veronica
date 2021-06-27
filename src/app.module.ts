@@ -5,6 +5,7 @@ import { ConquestModule } from './conquest/conquest.module';
 import { SocketioModule } from './socketio/socketio.module';
 import { DalModule } from './dal/dal.module';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -13,6 +14,7 @@ import configuration from './config/configuration';
     SocketioModule,
     DalModule,
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

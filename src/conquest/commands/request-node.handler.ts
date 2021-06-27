@@ -12,7 +12,7 @@ export class RequestNodeHandler implements ICommandHandler<RequestNodeCommand> {
 
   async execute(command: RequestNodeCommand) {
     console.log('RequestNodeCommand...');
-    const { conquestId, phaseId, zoneId, nodeId, ownerId } = command;
+    const { conquestId, phaseId, zoneId, nodeId, ownerId, ownerName } = command;
     if (ownerId === undefined) {
       await this.repository.clearOwner(conquestId, phaseId, zoneId, nodeId);
     } else {
@@ -22,6 +22,7 @@ export class RequestNodeHandler implements ICommandHandler<RequestNodeCommand> {
         zoneId,
         nodeId,
         ownerId,
+        ownerName,
       );
     }
     this.eventBus.publish(new NodeUpdatedEvent(conquestId, nodeId));

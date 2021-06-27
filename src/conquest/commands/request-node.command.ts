@@ -5,5 +5,6 @@ export default class RequestNodeCommand {
     public readonly zoneId: string,
     public readonly nodeId: string,
     public readonly ownerId: string,
+    public readonly ownerName: string,
   ) {}
 }
