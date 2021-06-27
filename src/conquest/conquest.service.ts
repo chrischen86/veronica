@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import ClearNodeCommand from './commands/clear-node.command';
 import CreateNodeCommand from './commands/create-node.command';
 import CreateZoneCommand from './commands/create-zone.command';
 import DeleteConquestCommand from './commands/delete-conquest.command';
@@ -9,6 +10,8 @@ import SetupPhaseCommand from './commands/setup-phase.command';
 import UpdateNodeCommand from './commands/update-node.command';
 import UpdateZoneOrdersCommand from './commands/update-zone-orders.command';
 import UpdateZoneStatusCommand from './commands/update-zone-status.command';
+import { ClearNodeDto } from './dtos/clear-node.dto';
+import { RequestNodeDto } from './dtos/request-node.dto';
 import {
   Conquest,
   Node,
@@ -184,15 +187,25 @@ export class ConquestService {
     );
   }
 
-  async requestNode(
-    conquestId: string,
-    phaseId: string,
-    zoneId: string,
-    nodeId: string,
-    ownerId: string,
-  ) {
+  async requestNode(requestNodeDto: RequestNodeDto) {
+    const { conquestId, phaseId, zoneId, nodeId, ownerId, ownerName } =
+      requestNodeDto;
     return this.commandBus.execute(
-      new RequestNodeCommand(conquestId, phaseId, zoneId, nodeId, ownerId),
+      new RequestNodeCommand(
+        conquestId,
+        phaseId,
+        zoneId,
+        nodeId,
+        ownerId,
+        ownerName,
+      ),
+    );
+  }
+
+  async clearNode(clearNodeDto: ClearNodeDto) {
+    const { conquestId, phaseId, zoneId, nodeId } = clearNodeDto;
+    return this.commandBus.execute(
+      new ClearNodeCommand(conquestId, phaseId, zoneId, nodeId),
     );
   }
 }

@@ -25,7 +25,7 @@ const authFactory = {
     CqrsModule,
     DalModule,
   ],
-  exports: [PassportModule],
+  exports: [PassportModule, UserService],
   controllers: [UserController],
   providers: [
     authFactory,

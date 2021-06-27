@@ -29,6 +29,7 @@ export interface Node {
   zoneId: string;
   number: number;
   ownerId: string;
+  ownerName?: string;
   status: NodeStatus;
 }
 

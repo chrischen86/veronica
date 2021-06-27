@@ -1,10 +1,8 @@
-export default class RequestNodeCommand {
+export default class ClearNodeCommand {
   constructor(
     public readonly conquestId: string,
     public readonly phaseId: string,
     public readonly zoneId: string,
     public readonly nodeId: string,
-    public readonly ownerId: string,
-    public readonly ownerName: string,
   ) {}
 }

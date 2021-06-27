@@ -12,7 +12,7 @@ export class SocketIoGuard implements CanActivate {
     return SocketIoGuard.verifyToken(
       this.jwtService,
       client,
-      client.request['token'],
+      client.handshake.auth.token,
     );
   }
 
@@ -21,10 +21,7 @@ export class SocketIoGuard implements CanActivate {
     socket: ConnectedSocket,
     token?: string,
   ) {
-    if (
-      socket.conn.userId &&
-      (await jwtService.verifyAsync(socket.conn.token))
-    ) {
+    if (socket.conn.userId) {
       return true;
     }
 

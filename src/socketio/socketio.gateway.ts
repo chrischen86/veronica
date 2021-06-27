@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UseInterceptors } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -7,8 +7,12 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserService } from '../auth/user.service';
 import { ConquestService } from '../conquest/conquest.service';
+import { ClearNodeDto } from '../conquest/dtos/clear-node.dto';
+import { RequestNodeDto } from '../conquest/dtos/request-node.dto';
 import { SocketIoGuard } from './guards/socketio.guard';
+import { SocketInterceptor } from './interceptors/socket.interceptor';
 import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';
@@ -19,6 +23,7 @@ import { UpdateZoneStatusDto } from './interfaces/update-zone-status-dto.interfa
 import { ConnectedSocket } from './types';
 
 @UseGuards(SocketIoGuard)
+@UseInterceptors(SocketInterceptor)
 @WebSocketGateway()
 export class SocketioGateway implements OnGatewayConnection {
   @WebSocketServer()
@@ -46,8 +51,6 @@ export class SocketioGateway implements OnGatewayConnection {
   @SubscribeMessage('join')
   async handleJoin(socket: ConnectedSocket, payload: JoinDto) {
     const { roomNumber } = payload;
-    console.log(socket.conn.token);
-    console.log(socket.conn.userId);
     const conquest = await this.service.findOneConquest(roomNumber);
     if (conquest === null) {
       return {
@@ -86,18 +89,15 @@ export class SocketioGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('assignNode')
-  async handleAssignNode(socket: Socket, payload: AssignNodeDto) {
+  async handleAssignNode(socket: ConnectedSocket, payload: RequestNodeDto) {
     console.log('AssignNode Message...');
     let isRejected = false;
-    const { conquestId, phaseId, zoneId, nodeId, ownerId } = payload;
+    const { userId: ownerId, userName: ownerName } = socket.conn;
+    payload.ownerId = ownerId;
+    payload.ownerName = ownerName;
+
     try {
-      await this.service.requestNode(
-        conquestId,
-        phaseId,
-        zoneId,
-        nodeId,
-        ownerId,
-      );
+      await this.service.requestNode(payload);
     } catch (ex) {
       const { name } = ex;
       if (name === 'ConditionalCheckFailedException') {
@@ -115,6 +115,15 @@ export class SocketioGateway implements OnGatewayConnection {
       };
     }
 
+    return {
+      status: 'ok',
+    };
+  }
+
+  @SubscribeMessage('clearNode')
+  async handleClearNode(socket: ConnectedSocket, payload: ClearNodeDto) {
+    console.log('ClearNode Message...');
+    await this.service.clearNode(payload);
     return {
       status: 'ok',
     };

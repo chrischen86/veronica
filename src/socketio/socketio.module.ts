@@ -4,6 +4,7 @@ import { SocketioGateway } from './socketio.gateway';
 import { ConquestCreatedTestSocketHandler } from './another.handler';
 import { EventHandlers } from './events';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   providers: [
@@ -11,7 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
     ConquestCreatedTestSocketHandler,
     ...EventHandlers,
   ],
-  imports: [ConquestModule, JwtModule.register({})],
+  imports: [ConquestModule, JwtModule.register({}), AuthModule],
   exports: [JwtModule],
 })
 export class SocketioModule {}

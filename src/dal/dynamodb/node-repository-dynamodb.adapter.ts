@@ -138,7 +138,7 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     const params: UpdateItemCommandInput = {
       TableName: Schema.Table.Name,
       Key: key,
-      UpdateExpression: `remove ownerId`,
+      UpdateExpression: `remove ownerId, ownerName`,
     };
     await this.service.client.send(new UpdateItemCommand(params));
   }
@@ -149,16 +149,21 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     zoneId: string,
     nodeId: string,
     ownerId: string,
+    ownerName: string,
   ) {
     const key = marshallNodeKey(conquestId, phaseId, zoneId, nodeId);
     const params: UpdateItemCommandInput = {
       TableName: Schema.Table.Name,
       Key: key,
-      UpdateExpression: `set #ownerId = :ownerId`,
+      UpdateExpression: `set #ownerId = :ownerId, #ownerName = :ownerName`,
       ExpressionAttributeNames: {
         '#ownerId': 'ownerId',
+        '#ownerName': 'ownerName',
       },
-      ExpressionAttributeValues: marshall({ ':ownerId': ownerId }),
+      ExpressionAttributeValues: marshall({
+        ':ownerId': ownerId,
+        ':ownerName': ownerName,
+      }),
       ConditionExpression: 'attribute_not_exists(#ownerId)',
     };
     await this.service.client.send(new UpdateItemCommand(params));

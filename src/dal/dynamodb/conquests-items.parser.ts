@@ -182,13 +182,14 @@ const parse = (
         break;
       }
       case 'NODE': {
-        const { id, zoneId, number, ownerId, status } = data;
+        const { id, zoneId, number, ownerId, status, ownerName } = data;
         const node: Node = {
           id,
           zoneId,
           number,
           ownerId,
           status,
+          ownerName,
         };
         nodeArray.push(node);
       }

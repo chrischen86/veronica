@@ -21,7 +21,6 @@ export class ConquestController {
     return this.service.createConquest(allianceId, startDate, endDate);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get()
   async findAll() {
     return this.service.findAllConquest();
@@ -31,7 +30,6 @@ export class ConquestController {
   async findOne(@Param('id') id: string) {
     return this.service.findOneConquest(id);
   }
-
   @Delete(':id')
   async deleteOne(@Param('id') id: string) {
     return this.service.deleteOneConquest(id);
