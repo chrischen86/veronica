@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { User } from '../../auth/interfaces/user.interface';
 
 export class Alliance {

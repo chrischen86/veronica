@@ -1,9 +1,10 @@
 import { AttributeValue } from '@aws-sdk/client-dynamodb';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { Alliance } from '../../alliance/interfaces/alliance.interface';
+import { Exclude } from 'class-transformer';
 
+@Exclude()
 export class AllianceEntity extends Alliance {
-  another: string;
   constructor(item: { [key: string]: AttributeValue }) {
     super();
     this.parse(item);
@@ -18,7 +19,5 @@ export class AllianceEntity extends Alliance {
     this.ownerId = ownerId;
     this.ownerName = ownerName;
     this.members = [];
-
-    this.another = 'whyy';
   }
 }
