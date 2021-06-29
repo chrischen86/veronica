@@ -11,6 +11,8 @@ import { PhaseRepository } from './repository/phase.repository';
 import { ZoneRepository } from './repository/zone.repository';
 import { UserRepository } from './repository/user.repository';
 import { UserRepositoryDynamoDbAdapter } from './dynamodb/user-repository-dynamodb.adapter';
+import { AllianceRepository } from './repository/alliance.repository';
+import { AllianceRepositoryDynamoDbAdapter } from './dynamodb/alliance-repository-dynamodb.adapter';
 
 @Module({
   providers: [
@@ -35,6 +37,10 @@ import { UserRepositoryDynamoDbAdapter } from './dynamodb/user-repository-dynamo
       provide: UserRepository,
       useClass: UserRepositoryDynamoDbAdapter,
     },
+    {
+      provide: AllianceRepository,
+      useClass: AllianceRepositoryDynamoDbAdapter,
+    },
     MemoryStore,
   ],
   exports: [
@@ -43,6 +49,7 @@ import { UserRepositoryDynamoDbAdapter } from './dynamodb/user-repository-dynamo
     ZoneRepository,
     NodeRepository,
     UserRepository,
+    AllianceRepository,
   ],
 })
 export class DalModule {}

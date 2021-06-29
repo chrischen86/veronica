@@ -11,37 +11,50 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
+import { Alliance } from '../../alliance/interfaces/alliance.interface';
 import { User } from '../../auth/interfaces/user.interface';
-import { UserRepository } from '../repository/user.repository';
+import { AllianceEntity } from '../entities/alliance.enttity';
+import { UserEntity } from '../entities/user.enttity';
+import { AllianceRepository } from '../repository/alliance.repository';
 import { DynamoDbService } from './dynamodb.service';
-import { marshallUser, marshallUserKey } from './marshall/user.marshall';
+import {
+  marshallAlliance,
+  marshallAllianceKey,
+} from './marshall/alliance.marshall';
+import { marshallUserKey } from './marshall/user.marshall';
 import Schema from './schema.defintions';
 
 @Injectable()
-export class UserRepositoryDynamoDbAdapter extends UserRepository {
+export class AllianceRepositoryDynamoDbAdapter extends AllianceRepository {
   constructor(private readonly service: DynamoDbService) {
     super();
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(maxItems = 100, lastId?: string): Promise<Alliance[]> {
     const params: QueryCommandInput = {
+      KeyConditionExpression: '#pk = :pk',
       ExpressionAttributeValues: {
-        ':pk': { S: `USER` },
+        ':pk': { S: `ALLIANCE` },
       },
+      ExpressionAttributeNames: {
+        '#pk': Schema.Keys.PK,
+      },
+      ExclusiveStartKey:
+        lastId !== undefined ? marshallAllianceKey(lastId) : undefined,
       TableName: Schema.Table.Name,
     };
 
-    const data = await this.service.client.send(new QueryCommand(params));
-    const users = this.parseUsers(data.Items);
-    return users;
+    const items = await this.service.query(params, maxItems);
+    const alliances = items.map((a) => new AllianceEntity(a));
+    return alliances;
   }
 
-  async findOneById(userId: string): Promise<User> {
+  async findOneById(allianceId: string): Promise<Alliance> {
     const params: GetItemCommandInput = {
       TableName: Schema.Table.Name,
       Key: {
-        PK: { S: `USER` },
-        SK: { S: `USER#${userId}` },
+        PK: { S: `ALLIANCE` },
+        SK: { S: `ALLIANCE#${allianceId}` },
       },
     };
     const data = await this.service.client.send(new GetItemCommand(params));
@@ -49,12 +62,13 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     if (Item === undefined) {
       return null;
     }
-    const users = this.parseUsers([Item]);
-    return users[0];
+
+    const alliance = new AllianceEntity(Item);
+    return alliance;
   }
 
-  async create(user: User): Promise<User> {
-    const item = marshallUser(user);
+  async create(user: Alliance): Promise<Alliance> {
+    const item = marshallAlliance(user);
     const params: PutItemCommandInput = {
       TableName: Schema.Table.Name,
       Item: item,
@@ -63,27 +77,54 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     return user;
   }
 
-  async joinAlliance(user: User) {
-    const { id, name, allianceId } = user;
-    if (allianceId === undefined) {
-      return;
-    }
-
-    const key = marshallUserKey(id);
-    const {
-      updateExpression,
-      expressionAttributeNames,
-      expressionAttributeValues,
-    } = this.getUpdateAllianceParams(allianceId, name);
-
-    const params: UpdateItemCommandInput = {
+  async findAllByName(name: string): Promise<Alliance[]> {
+    const params: QueryCommandInput = {
+      IndexName: Schema.Indexes.GSI1,
+      KeyConditionExpression: '#gsi1pk = :pk AND begins_with(#gsi1sk, :sk)',
+      ExpressionAttributeValues: {
+        ':pk': { S: `ALLIANCE` },
+        ':sk': { S: `NAME#${name}` },
+      },
+      ExpressionAttributeNames: {
+        '#gsi1pk': Schema.Keys.GSI1PK,
+        '#gsi1sk': Schema.Keys.GSI1SK,
+      },
       TableName: Schema.Table.Name,
-      Key: key,
-      UpdateExpression: `set ${updateExpression.join(', ')}`,
-      ExpressionAttributeNames: expressionAttributeNames,
-      ExpressionAttributeValues: marshall(expressionAttributeValues),
     };
-    await this.service.client.send(new UpdateItemCommand(params));
+
+    const data = await this.service.client.send(new QueryCommand(params));
+    const alliances = data.Items.map((a) => new AllianceEntity(a));
+    return alliances;
+  }
+
+  async findOneByIdIncludeMembers(allianceId: string): Promise<Alliance> {
+    const params: QueryCommandInput = {
+      IndexName: Schema.Indexes.GSI2,
+      KeyConditionExpression: '#gsi2pk = :pk',
+      ExpressionAttributeValues: {
+        ':pk': { S: `ALLIANCE#${allianceId}` },
+      },
+      ExpressionAttributeNames: {
+        '#gsi2pk': Schema.Keys.GSI2PK,
+      },
+      TableName: Schema.Table.Name,
+    };
+
+    const data = await this.service.client.send(new QueryCommand(params));
+    let alliance: AllianceEntity;
+    const members: UserEntity[] = [];
+    data.Items.forEach((i) => {
+      if (i[Schema.Keys.GSI2SK].S.startsWith('USERNAME#')) {
+        members.push(new UserEntity(i));
+      } else if (i[Schema.Keys.GSI2SK].S.startsWith('NAME#')) {
+        alliance = new AllianceEntity(i);
+      }
+    });
+    if (alliance === undefined) {
+      return null;
+    }
+    alliance.members = members;
+    return alliance;
   }
 
   async findAllByAllianceId(allianceId: string): Promise<User[]> {
@@ -92,7 +133,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
       KeyConditionExpression: '#gsi2pk = :pk AND begins_with(#gsi2sk, :sk)',
       ExpressionAttributeValues: {
         ':pk': { S: `ALLIANCE#${allianceId}` },
-        ':sk': { S: `USERNAME#` },
+        ':sk': { S: `USER#` },
       },
       ExpressionAttributeNames: {
         '#gsi2pk': Schema.Keys.GSI2PK,
@@ -123,7 +164,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     let expressionAttributeValues = {
       ':name': name,
       ':gsi1pk': `USER`,
-      ':gsi1sk': `NAME#${name}`,
+      ':gsi1sk': `USER#${name}`,
     };
 
     if (allianceId !== undefined) {
@@ -167,7 +208,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     const expressionAttributeValues = {
       ':allianceId': allianceId,
       ':gsi2pk': `ALLIANCE#${allianceId}`,
-      ':gsi2sk': `USERNAME#${name}`,
+      ':gsi2sk': `USER#${name}`,
     };
 
     return {

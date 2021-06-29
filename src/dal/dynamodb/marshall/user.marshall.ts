@@ -6,7 +6,7 @@ export const marshallUser = (user: User) => {
   const toReturn = {
     ...marshallUserKey(id),
     GSI1PK: { S: 'USER' },
-    GSI1SK: { S: `USER#${name}` },
+    GSI1SK: { S: `NAME#${name}` },
     id: { S: id },
     name: { S: name },
   };
@@ -14,7 +14,7 @@ export const marshallUser = (user: User) => {
   if (allianceId !== undefined) {
     toReturn['allianceId'] = { S: allianceId };
     toReturn['GSI2PK'] = { S: `ALLIANCE#${allianceId}` };
-    toReturn['GSI2SK'] = { S: `USER#${name}` };
+    toReturn['GSI2SK'] = { S: `USERNAME#${name}` };
   }
 
   return toReturn;

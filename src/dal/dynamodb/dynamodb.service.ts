@@ -16,9 +16,9 @@ export class DynamoDbService {
     this.client = new DynamoDBClient({ ...databaseConfig });
   }
 
-  async query(params: QueryCommandInput) {
+  async query(params: QueryCommandInput, maxItems?: number) {
     let sentinel = 0;
-    let lastEvaluatedKey = null;
+    let lastEvaluatedKey = params.ExclusiveStartKey;
     const items = [];
 
     const queryParams: QueryCommandInput = JSON.parse(JSON.stringify(params));
@@ -28,7 +28,12 @@ export class DynamoDbService {
       lastEvaluatedKey = data.LastEvaluatedKey;
       queryParams.ExclusiveStartKey = lastEvaluatedKey;
       sentinel++;
+
+      if (maxItems !== undefined && items.length >= maxItems) {
+        return items.slice(0, maxItems);
+      }
     } while (sentinel < this.maxIterations && lastEvaluatedKey);
+
     return items;
   }
 }

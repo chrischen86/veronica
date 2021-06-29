@@ -7,13 +7,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UserService } from '../auth/user.service';
 import { ConquestService } from '../conquest/conquest.service';
 import { ClearNodeDto } from '../conquest/dtos/clear-node.dto';
 import { RequestNodeDto } from '../conquest/dtos/request-node.dto';
 import { SocketIoGuard } from './guards/socketio.guard';
 import { SocketInterceptor } from './interceptors/socket.interceptor';
-import { AssignNodeDto } from './interfaces/assign-node-dto.interface';
 import { JoinDto } from './interfaces/join-dto.interface';
 import { ReconnectDto } from './interfaces/reconnect-dto.interface';
 import { SetupZoneDto } from './interfaces/setup-zone-dto.interface';
