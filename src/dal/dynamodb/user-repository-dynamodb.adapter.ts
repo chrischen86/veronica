@@ -111,16 +111,19 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     const { id, name, allianceId } = user;
     const key = marshallUserKey(id);
     const updateExpression = [
+      '#id = :id',
       '#name = :name',
       '#gsi1pk = :gsi1pk',
       '#gsi1sk = :gsi1sk',
     ];
     let expressionAttributeNames = {
+      '#id': 'id',
       '#name': 'name',
       '#gsi1pk': Schema.Keys.GSI1PK,
       '#gsi1sk': Schema.Keys.GSI1SK,
     };
     let expressionAttributeValues = {
+      ':id': id,
       ':name': name,
       ':gsi1pk': `USER`,
       ':gsi1sk': `NAME#${name}`,

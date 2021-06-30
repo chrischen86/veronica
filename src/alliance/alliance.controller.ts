@@ -6,8 +6,11 @@ import {
   Param,
   Post,
   Query,
+  Request,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AllianceService } from './alliance.service';
 import { CreateAllianceDto } from './dtos/create-alliance.dto.';
 
@@ -26,8 +29,16 @@ export class AllianceController {
     return this.service.findOneAlliance(id, query['$select'] === 'members');
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  async createAlliance(@Body() dto: CreateAllianceDto) {
+  async createAlliance(@Body() dto: CreateAllianceDto, @Request() req) {
+    const {
+      user: { sub },
+    } = req;
+    if (sub === undefined) {
+      return { message: 'error' };
+    }
+    dto.ownerId = sub;
     return this.service.createAlliance(dto);
   }
 }

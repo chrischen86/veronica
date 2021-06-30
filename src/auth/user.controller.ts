@@ -20,7 +20,11 @@ export class UserController {
   constructor(private readonly service: UserService) {}
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserDto, @Request() req) {
+    const {
+      user: { sub },
+    } = req;
+    createUserDto.id = sub;
     return this.service.createUser(createUserDto);
   }
 
