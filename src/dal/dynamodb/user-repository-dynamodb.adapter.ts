@@ -12,6 +12,7 @@ import {
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
 import { User } from '../../auth/interfaces/user.interface';
+import { UserEntity } from '../entities/user.enttity';
 import { UserRepository } from '../repository/user.repository';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallUser, marshallUserKey } from './marshall/user.marshall';
@@ -32,7 +33,8 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
-    const users = this.parseUsers(data.Items);
+
+    const users = data.Items.map((u) => new UserEntity(u));
     return users;
   }
 
@@ -49,8 +51,8 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     if (Item === undefined) {
       return null;
     }
-    const users = this.parseUsers([Item]);
-    return users[0];
+    const user = new UserEntity(Item);
+    return user;
   }
 
   async create(user: User): Promise<User> {
@@ -103,7 +105,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
-    const users = this.parseUsers(data.Items);
+    const users = data.Items.map((u) => new UserEntity(u));
     return users;
   }
 
@@ -178,26 +180,5 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
       expressionAttributeNames,
       expressionAttributeValues,
     };
-  }
-
-  parseUsers(
-    items: {
-      [key: string]: AttributeValue;
-    }[],
-  ): User[] {
-    const userArray: User[] = [];
-
-    items.map((r) => {
-      const data = unmarshall(r);
-      const { id, allianceId, name } = data;
-      const conquest: User = {
-        id,
-        allianceId,
-        name,
-      };
-      userArray.push(conquest);
-    });
-
-    return userArray;
   }
 }
