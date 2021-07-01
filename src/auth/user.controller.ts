@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDto } from './interfaces/create-user-dto.interface';
+import { JoinAllianceDto } from './interfaces/join-alliance-dto.interface';
 import { UpdateProfileDto } from './interfaces/update-profile-dto.interface';
 import { UserService } from './user.service';
 
@@ -20,7 +21,11 @@ export class UserController {
   constructor(private readonly service: UserService) {}
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserDto, @Request() req) {
+    const {
+      user: { sub },
+    } = req;
+    createUserDto.id = sub;
     return this.service.createUser(createUserDto);
   }
 
@@ -61,6 +66,19 @@ export class UserController {
     dto.id = sub;
     await this.service.updateProfile(dto);
     return this.service.findOneUser(sub);
+  }
+
+  @Post('/joinAlliance')
+  async joinAlliance(@Body() dto: JoinAllianceDto, @Request() req) {
+    const {
+      user: { sub },
+    } = req;
+    if (sub === undefined) {
+      return { message: 'error' };
+    }
+
+    dto.userId = sub;
+    await this.service.joinAlliance(dto);
   }
 
   //   @Delete(':id')

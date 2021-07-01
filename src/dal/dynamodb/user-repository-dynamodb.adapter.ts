@@ -12,6 +12,7 @@ import {
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
 import { User } from '../../auth/interfaces/user.interface';
+import { UserEntity } from '../entities/user.enttity';
 import { UserRepository } from '../repository/user.repository';
 import { DynamoDbService } from './dynamodb.service';
 import { marshallUser, marshallUserKey } from './marshall/user.marshall';
@@ -32,7 +33,8 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
-    const users = this.parseUsers(data.Items);
+
+    const users = data.Items.map((u) => new UserEntity(u));
     return users;
   }
 
@@ -49,8 +51,8 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     if (Item === undefined) {
       return null;
     }
-    const users = this.parseUsers([Item]);
-    return users[0];
+    const user = new UserEntity(Item);
+    return user;
   }
 
   async create(user: User): Promise<User> {
@@ -92,7 +94,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
       KeyConditionExpression: '#gsi2pk = :pk AND begins_with(#gsi2sk, :sk)',
       ExpressionAttributeValues: {
         ':pk': { S: `ALLIANCE#${allianceId}` },
-        ':sk': { S: `USER#` },
+        ':sk': { S: `USERNAME#` },
       },
       ExpressionAttributeNames: {
         '#gsi2pk': Schema.Keys.GSI2PK,
@@ -103,7 +105,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     };
 
     const data = await this.service.client.send(new QueryCommand(params));
-    const users = this.parseUsers(data.Items);
+    const users = data.Items.map((u) => new UserEntity(u));
     return users;
   }
 
@@ -111,19 +113,22 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     const { id, name, allianceId } = user;
     const key = marshallUserKey(id);
     const updateExpression = [
+      '#id = :id',
       '#name = :name',
       '#gsi1pk = :gsi1pk',
       '#gsi1sk = :gsi1sk',
     ];
     let expressionAttributeNames = {
+      '#id': 'id',
       '#name': 'name',
       '#gsi1pk': Schema.Keys.GSI1PK,
       '#gsi1sk': Schema.Keys.GSI1SK,
     };
     let expressionAttributeValues = {
+      ':id': id,
       ':name': name,
       ':gsi1pk': `USER`,
-      ':gsi1sk': `USER#${name}`,
+      ':gsi1sk': `NAME#${name}`,
     };
 
     if (allianceId !== undefined) {
@@ -167,7 +172,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     const expressionAttributeValues = {
       ':allianceId': allianceId,
       ':gsi2pk': `ALLIANCE#${allianceId}`,
-      ':gsi2sk': `USER#${name}`,
+      ':gsi2sk': `USERNAME#${name}`,
     };
 
     return {
@@ -175,26 +180,5 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
       expressionAttributeNames,
       expressionAttributeValues,
     };
-  }
-
-  parseUsers(
-    items: {
-      [key: string]: AttributeValue;
-    }[],
-  ): User[] {
-    const userArray: User[] = [];
-
-    items.map((r) => {
-      const data = unmarshall(r);
-      const { id, allianceId, name } = data;
-      const conquest: User = {
-        id,
-        allianceId,
-        name,
-      };
-      userArray.push(conquest);
-    });
-
-    return userArray;
   }
 }
