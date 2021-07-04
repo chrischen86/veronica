@@ -3,5 +3,6 @@ export default class JoinAllianceCommand {
     public readonly userId: string,
     public readonly userName: string,
     public readonly allianceId: string,
+    public readonly allianceName: string,
   ) {}
 }

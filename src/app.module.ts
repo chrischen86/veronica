@@ -7,6 +7,7 @@ import { DalModule } from './dal/dal.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { AllianceModule } from './alliance/alliance.module';
+import { StatsModule } from './stats/stats.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -17,6 +18,7 @@ import configuration from './config/configuration';
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
     AuthModule,
     AllianceModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -10,11 +10,12 @@ export class JoinAllianceHandler
   constructor(private readonly repository: UserRepository) {}
 
   async execute(command: JoinAllianceCommand) {
-    const { userId: id, userName: name, allianceId } = command;
+    const { userId: id, userName: name, allianceId, allianceName } = command;
     const user: User = {
       id,
       name,
       allianceId,
+      allianceName,
     };
 
     await this.repository.joinAlliance(user);

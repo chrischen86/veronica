@@ -1,5 +1,4 @@
 import {
-  AttributeValue,
   GetItemCommand,
   GetItemCommandInput,
   PutItemCommand,
@@ -9,7 +8,7 @@ import {
   UpdateItemCommand,
   UpdateItemCommandInput,
 } from '@aws-sdk/client-dynamodb';
-import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
+import { marshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
 import { User } from '../../auth/interfaces/user.interface';
 import { UserEntity } from '../entities/user.enttity';
@@ -66,8 +65,8 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
   }
 
   async joinAlliance(user: User) {
-    const { id, name, allianceId } = user;
-    if (allianceId === undefined) {
+    const { id, name, allianceId, allianceName } = user;
+    if (allianceId === undefined || allianceName === undefined) {
       return;
     }
 
@@ -76,7 +75,9 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
       updateExpression,
       expressionAttributeNames,
       expressionAttributeValues,
-    } = this.getUpdateAllianceParams(allianceId, name);
+    } = this.getUpdateAllianceParams(allianceId, name, allianceName);
+
+    console.log(updateExpression);
 
     const params: UpdateItemCommandInput = {
       TableName: Schema.Table.Name,
@@ -110,7 +111,7 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
   }
 
   async updateProfile(user: User) {
-    const { id, name, allianceId } = user;
+    const { id, name, allianceId, allianceName } = user;
     const key = marshallUserKey(id);
     const updateExpression = [
       '#id = :id',
@@ -131,12 +132,12 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
       ':gsi1sk': `NAME#${name}`,
     };
 
-    if (allianceId !== undefined) {
+    if (allianceId !== undefined && allianceName !== undefined) {
       const {
         updateExpression: allianceUpdateExpression,
         expressionAttributeNames: allianceExpressionAttributeNames,
         expressionAttributeValues: allianceExpressionAttributeValues,
-      } = this.getUpdateAllianceParams(allianceId, name);
+      } = this.getUpdateAllianceParams(allianceId, name, allianceName);
       updateExpression.push(...allianceUpdateExpression);
       expressionAttributeNames = {
         ...expressionAttributeNames,
@@ -158,21 +159,24 @@ export class UserRepositoryDynamoDbAdapter extends UserRepository {
     await this.service.client.send(new UpdateItemCommand(params));
   }
 
-  getUpdateAllianceParams(allianceId, name) {
+  getUpdateAllianceParams(allianceId, name, allianceName) {
     const updateExpression = [
       '#allianceId = :allianceId',
       '#gsi2pk = :gsi2pk',
       '#gsi2sk = :gsi2sk',
+      '#allianceName = :allianceName',
     ];
     const expressionAttributeNames = {
       '#allianceId': 'allianceId',
       '#gsi2pk': Schema.Keys.GSI2PK,
       '#gsi2sk': Schema.Keys.GSI2SK,
+      '#allianceName': 'allianceName',
     };
     const expressionAttributeValues = {
       ':allianceId': allianceId,
       ':gsi2pk': `ALLIANCE#${allianceId}`,
       ':gsi2sk': `USERNAME#${name}`,
+      ':allianceName': allianceName,
     };
 
     return {

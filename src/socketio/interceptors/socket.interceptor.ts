@@ -24,10 +24,14 @@ export class SocketInterceptor implements NestInterceptor {
 
   static async enrichSocket(socket: ConnectedSocket, service: UserService) {
     const {
-      conn: { userId, userName, allianceId },
+      conn: { userId, userName, allianceId, allianceName },
     } = socket;
 
-    if (userName !== undefined && allianceId !== undefined) {
+    if (
+      userName !== undefined &&
+      allianceId !== undefined &&
+      allianceName !== undefined
+    ) {
       console.log('already have values');
       return;
     }
@@ -41,5 +45,6 @@ export class SocketInterceptor implements NestInterceptor {
 
     socket.conn.userName = user.name;
     socket.conn.allianceId = user.allianceId;
+    socket.conn.allianceName = user.allianceName;
   }
 }

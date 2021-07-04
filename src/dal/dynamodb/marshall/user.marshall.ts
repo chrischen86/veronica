@@ -1,7 +1,7 @@
 import { User } from '../../../auth/interfaces/user.interface';
 
 export const marshallUser = (user: User) => {
-  const { id, allianceId, name } = user;
+  const { id, allianceId, name, allianceName } = user;
 
   const toReturn = {
     ...marshallUserKey(id),
@@ -15,6 +15,10 @@ export const marshallUser = (user: User) => {
     toReturn['allianceId'] = { S: allianceId };
     toReturn['GSI2PK'] = { S: `ALLIANCE#${allianceId}` };
     toReturn['GSI2SK'] = { S: `USERNAME#${name}` };
+  }
+
+  if (allianceName !== undefined) {
+    toReturn['allianceName'] = { S: allianceName };
   }
 
   return toReturn;

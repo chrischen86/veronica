@@ -10,10 +10,11 @@ export class UserEntity extends User {
 
   parse(item: { [key: string]: AttributeValue }) {
     const data = unmarshall(item);
-    const { id, name, allianceId } = data;
+    const { id, name, allianceId, allianceName } = data;
 
     this.id = id;
     this.name = name;
     this.allianceId = allianceId;
+    this.allianceName = allianceName;
   }
 }

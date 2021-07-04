@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { Context } from '../shared/interfaces/context.interface';
 import ClearNodeCommand from './commands/clear-node.command';
 import CreateNodeCommand from './commands/create-node.command';
 import CreateZoneCommand from './commands/create-zone.command';
@@ -187,7 +188,7 @@ export class ConquestService {
     );
   }
 
-  async requestNode(requestNodeDto: RequestNodeDto) {
+  async requestNode(requestNodeDto: RequestNodeDto, context?: Context) {
     const { conquestId, phaseId, zoneId, nodeId, ownerId, ownerName } =
       requestNodeDto;
     return this.commandBus.execute(
@@ -198,14 +199,15 @@ export class ConquestService {
         nodeId,
         ownerId,
         ownerName,
+        context,
       ),
     );
   }
 
-  async clearNode(clearNodeDto: ClearNodeDto) {
+  async clearNode(clearNodeDto: ClearNodeDto, context?: Context) {
     const { conquestId, phaseId, zoneId, nodeId } = clearNodeDto;
     return this.commandBus.execute(
-      new ClearNodeCommand(conquestId, phaseId, zoneId, nodeId),
+      new ClearNodeCommand(conquestId, phaseId, zoneId, nodeId, context),
     );
   }
 }
