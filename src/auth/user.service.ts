@@ -28,9 +28,9 @@ export class UserService {
   }
 
   async updateProfile(updateProfileDto: UpdateProfileDto) {
-    const { id, name, allianceId } = updateProfileDto;
+    const { id, name, allianceId, allianceName } = updateProfileDto;
     return this.commandBus.execute(
-      new UpdateProfileCommand(id, name, allianceId),
+      new UpdateProfileCommand(id, name, allianceId, allianceName),
     );
   }
 
