@@ -58,14 +58,16 @@ export class StatsRepositoryDynamoDbAdapter extends StatsRepository {
   ): Promise<Stats[]> {
     const startDateString = getAttackDateString(startDate);
     const params: QueryCommandInput = {
-      KeyConditionExpression: '#pk = :pk AND begins_with(#sk, :sk)',
+      IndexName: Schema.Indexes.GSI2,
+      KeyConditionExpression:
+        '#gsi2pk = :gsi2pk AND begins_with(#gsi2sk, :gsi2sk)',
       ExpressionAttributeValues: {
-        ':pk': { S: `STATS` },
-        ':sk': { S: `USER#${ownerId}#DATE#${startDateString}` },
+        ':gsi2pk': { S: `USERSTATS#${ownerId}` },
+        ':gsi2sk': { S: `${startDateString}` },
       },
       ExpressionAttributeNames: {
-        '#pk': Schema.Keys.PK,
-        '#sk': Schema.Keys.SK,
+        '#gsi2pk': Schema.Keys.PK,
+        '#gsi2sk': Schema.Keys.SK,
       },
       TableName: Schema.Table.Name,
     };
@@ -80,7 +82,7 @@ export class StatsRepositoryDynamoDbAdapter extends StatsRepository {
       IndexName: Schema.Indexes.GSI1,
       KeyConditionExpression: '#gsi1pk = :pk',
       ExpressionAttributeValues: {
-        ':pk': { S: `AS#${allianceId}` },
+        ':pk': { S: `ALLIANCESTATS#${allianceId}` },
       },
       ExpressionAttributeNames: {
         '#gsi1pk': Schema.Keys.GSI1PK,
@@ -101,10 +103,12 @@ export class StatsRepositoryDynamoDbAdapter extends StatsRepository {
     const params: UpdateItemCommandInput = {
       TableName: Schema.Table.Name,
       Key: key,
-      UpdateExpression: `set #gsi1pk = :gsi1pk, #gsi1sk = :gsi1sk, #id = if_not_exists(#id, :id), #ownerId = :ownerId, #ownerName = :ownerName, #allianceId = :allianceId, #allianceName = :allianceName, #attackDate = :attackDate ADD #attacks :attacks`,
+      UpdateExpression: `set #gsi1pk = :gsi1pk, #gsi1sk = :gsi1sk, #gsi2pk = :gsi2pk, #gsi2sk = :gsi2sk, #id = if_not_exists(#id, :id), #ownerId = :ownerId, #ownerName = :ownerName, #allianceId = :allianceId, #allianceName = :allianceName, #attackDate = :attackDate ADD #attacks :attacks`,
       ExpressionAttributeNames: {
         '#gsi1pk': Schema.Keys.GSI1PK,
         '#gsi1sk': Schema.Keys.GSI1SK,
+        '#gsi2pk': Schema.Keys.GSI2PK,
+        '#gsi2sk': Schema.Keys.GSI2SK,
         '#id': 'id',
         '#ownerId': 'ownerId',
         '#ownerName': 'ownerName',
@@ -114,8 +118,10 @@ export class StatsRepositoryDynamoDbAdapter extends StatsRepository {
         '#attacks': 'attacks',
       },
       ExpressionAttributeValues: marshall({
-        ':gsi1pk': `AS#${allianceId}`,
-        ':gsi1sk': `USER#${ownerId}#DATE#${attackDateString}`,
+        ':gsi1pk': `ALLIANCESTATS#${allianceId}`,
+        ':gsi1sk': `DATE#${attackDateString}#USER#${ownerId}`,
+        ':gsi2pk': `USERSTATS#${ownerId}`,
+        ':gsi2sk': `${attackDateString}`,
         ':id': id,
         ':ownerId': ownerId,
         ':ownerName': ownerName,

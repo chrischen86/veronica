@@ -18,8 +18,10 @@ export const marshallAlliance = (stats: Stats) => {
   const attackDateString = getAttackDateString(attackDate);
   const toReturn = {
     ...marshallStatsKey(ownerId, attackDate),
-    GSI1PK: { S: `AS#${allianceId}` },
-    GSI1SK: { S: `USER#${ownerId}#DATE#${attackDateString}` },
+    GSI1PK: { S: `ALLIANCESTATS#${allianceId}` },
+    GSI1SK: { S: `DATE#${attackDateString}#USER#${ownerId}` },
+    GSI2PK: { S: `USERSTATS#${ownerId}` },
+    GSI2SK: { S: `${attackDateString}` },
     id: { S: id },
     attacks: { N: attacks },
     attackDate: { S: attackDateString },
