@@ -14,8 +14,8 @@ export class AllianceSagas {
       ofType(AllianceCreatedEvent),
       map((event) => {
         console.log('Inside [AllianceSagas] Saga');
-        const { id, ownerId, ownerName } = event;
-        return new UpdateProfileCommand(ownerId, ownerName, id);
+        const { id, allianceName, ownerId, ownerName } = event;
+        return new UpdateProfileCommand(ownerId, ownerName, id, allianceName);
       }),
     );
   };
