@@ -3,4 +3,5 @@ export class User {
   allianceId?: string;
   allianceName?: string;
   name: string;
+  totalAttacks?: number;
 }

@@ -18,8 +18,6 @@ export class NodeAssignedEventHandler
     const { conquestId } = event;
 
     const conquestState = await this.service.findOneConquest(conquestId);
-
-    console.log(conquestState);
     this.websocketGateway.server.to(conquestId).emit('NodeUpdated', {
       status: 'ok',
       conquestState,
