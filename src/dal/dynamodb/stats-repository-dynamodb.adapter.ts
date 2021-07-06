@@ -1,8 +1,9 @@
 import {
   QueryCommand,
   QueryCommandInput,
-  UpdateItemCommand,
-  UpdateItemCommandInput,
+  TransactWriteItemsCommand,
+  TransactWriteItemsCommandInput,
+  Update,
 } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@nestjs/common';
@@ -15,6 +16,7 @@ import {
   getAttackDateString,
   marshallStatsKey,
 } from './marshall/stats.marshall';
+import { marshallUserKey } from './marshall/user.marshall';
 import Schema from './schema.defintions';
 
 @Injectable()
@@ -25,12 +27,21 @@ export class StatsRepositoryDynamoDbAdapter extends StatsRepository {
 
   async incrementAttack(dto: UpdateStatsDto) {
     const params = this.buildUpdateParams(dto, 1);
-    this.service.client.send(new UpdateItemCommand(params));
+    const userParams = this.buildStatsParams(dto, 1);
+    const transactionParams: TransactWriteItemsCommandInput = {
+      TransactItems: [{ Update: params }, { Update: userParams }],
+    };
+
+    this.service.client.send(new TransactWriteItemsCommand(transactionParams));
   }
 
   async decrementAttack(dto: UpdateStatsDto) {
     const params = this.buildUpdateParams(dto, -1);
-    this.service.client.send(new UpdateItemCommand(params));
+    const userParams = this.buildStatsParams(dto, -1);
+    const transactionParams: TransactWriteItemsCommandInput = {
+      TransactItems: [{ Update: params }, { Update: userParams }],
+    };
+    this.service.client.send(new TransactWriteItemsCommand(transactionParams));
   }
 
   async findAllUserStats(ownerId: string): Promise<Stats[]> {
@@ -95,12 +106,29 @@ export class StatsRepositoryDynamoDbAdapter extends StatsRepository {
     return stats;
   }
 
+  buildStatsParams(dto: UpdateStatsDto, count: number) {
+    const { ownerId } = dto;
+    const key = marshallUserKey(ownerId);
+    const params: Update = {
+      TableName: Schema.Table.Name,
+      Key: key,
+      UpdateExpression: `ADD #totalAttacks :totalAttacks`,
+      ExpressionAttributeNames: {
+        '#totalAttacks': 'totalAttacks',
+      },
+      ExpressionAttributeValues: marshall({
+        ':totalAttacks': count,
+      }),
+    };
+    return params;
+  }
+
   buildUpdateParams(dto: UpdateStatsDto, count: number) {
     const { id, ownerId, ownerName, allianceName, allianceId, attackDate } =
       dto;
     const attackDateString = getAttackDateString(attackDate);
     const key = marshallStatsKey(ownerId, attackDate);
-    const params: UpdateItemCommandInput = {
+    const params: Update = {
       TableName: Schema.Table.Name,
       Key: key,
       UpdateExpression: `set #gsi1pk = :gsi1pk, #gsi1sk = :gsi1sk, #gsi2pk = :gsi2pk, #gsi2sk = :gsi2sk, #id = if_not_exists(#id, :id), #ownerId = :ownerId, #ownerName = :ownerName, #allianceId = :allianceId, #allianceName = :allianceName, #attackDate = :attackDate ADD #attacks :attacks`,

@@ -12,7 +12,6 @@ export class DecrementAttackHandler
 
   async execute(command: DecrementAttackCommand) {
     console.log('DecrementAttackCommand Handler...');
-    console.log(command);
     const { ownerId, ownerName, allianceId, allianceName } = command;
     if (
       ownerId === undefined ||
@@ -33,6 +32,6 @@ export class DecrementAttackHandler
       allianceName,
       attackDate: now,
     };
-    await this.repository.decrementAttack(dto);
+    this.repository.decrementAttack(dto);
   }
 }

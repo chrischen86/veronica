@@ -12,7 +12,6 @@ export class IncrementAttackHandler
 
   async execute(command: IncrementAttackCommand) {
     console.log('IncrementAttackCommand Handler...');
-    console.log(command);
     const { ownerId, ownerName, allianceId, allianceName } = command;
     if (
       ownerId === undefined ||
@@ -33,6 +32,6 @@ export class IncrementAttackHandler
       allianceName,
       attackDate: now,
     };
-    await this.repository.incrementAttack(dto);
+    this.repository.incrementAttack(dto);
   }
 }
