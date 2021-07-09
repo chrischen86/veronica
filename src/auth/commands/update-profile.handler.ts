@@ -10,11 +10,12 @@ export class UpdateProfileHandler
   constructor(private readonly repository: UserRepository) {}
 
   async execute(command: UpdateProfileCommand) {
-    const { id, name, allianceId } = command;
+    const { id, name, allianceId, allianceName } = command;
     const user: User = {
       id,
       name,
       allianceId,
+      allianceName,
     };
     console.log(user);
     await this.repository.updateProfile(user);

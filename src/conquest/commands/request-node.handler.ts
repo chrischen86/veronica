@@ -1,7 +1,8 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { NodeUpdatedEvent } from '../events/node-updated.event';
+import { NodeUpdatedEvent } from '../../shared/events/node-updated.event';
 import { NodeRepository } from '../../dal/repository/node.repository';
 import RequestNodeCommand from './request-node.command';
+import { NodeAssignedEvent } from '../../shared/events/node-assigned.event';
 
 @CommandHandler(RequestNodeCommand)
 export class RequestNodeHandler implements ICommandHandler<RequestNodeCommand> {
@@ -12,7 +13,8 @@ export class RequestNodeHandler implements ICommandHandler<RequestNodeCommand> {
 
   async execute(command: RequestNodeCommand) {
     console.log('RequestNodeCommand...');
-    const { conquestId, phaseId, zoneId, nodeId, ownerId, ownerName } = command;
+    const { conquestId, phaseId, zoneId, nodeId, ownerId, ownerName, context } =
+      command;
     if (ownerId === undefined) {
       await this.repository.clearOwner(conquestId, phaseId, zoneId, nodeId);
     } else {
@@ -25,6 +27,6 @@ export class RequestNodeHandler implements ICommandHandler<RequestNodeCommand> {
         ownerName,
       );
     }
-    this.eventBus.publish(new NodeUpdatedEvent(conquestId, nodeId));
+    this.eventBus.publish(new NodeAssignedEvent(conquestId, nodeId, context));
   }
 }

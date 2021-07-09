@@ -104,14 +104,21 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
       };
     }
     if (ownerId !== undefined) {
-      updateExpression.push('#ownerId = :ownerId');
+      const nowString = new Date().toISOString();
+      updateExpression.push(
+        '#ownerId = :ownerId, #gsi1pk = :gsi1pk, #gsi1sk = :gsi1sk',
+      );
       expressionAttributeNames = {
         ...expressionAttributeNames,
         '#ownerId': 'ownerId',
+        '#gsi1pk': Schema.Keys.GSI1PK,
+        '#gsi1sk': Schema.Keys.GSI1SK,
       };
       expressionAttributeValues = {
         ...expressionAttributeValues,
         ':ownerId': ownerId,
+        ':gsi1pk': `USERATTACK#${ownerId}`,
+        ':gsi1sk': `${nowString}`,
       };
     }
     if (updateExpression.length <= 0) {
@@ -138,7 +145,7 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     const params: UpdateItemCommandInput = {
       TableName: Schema.Table.Name,
       Key: key,
-      UpdateExpression: `remove ownerId, ownerName`,
+      UpdateExpression: `remove ownerId, ownerName, ${Schema.Keys.GSI1PK}, ${Schema.Keys.GSI1SK}`,
     };
     await this.service.client.send(new UpdateItemCommand(params));
   }
@@ -152,17 +159,22 @@ export class NodeRepositoryDynamoDbAdapter extends NodeRepository {
     ownerName: string,
   ) {
     const key = marshallNodeKey(conquestId, phaseId, zoneId, nodeId);
+    const nowString = new Date().toISOString();
     const params: UpdateItemCommandInput = {
       TableName: Schema.Table.Name,
       Key: key,
-      UpdateExpression: `set #ownerId = :ownerId, #ownerName = :ownerName`,
+      UpdateExpression: `set #ownerId = :ownerId, #ownerName = :ownerName, #gsi1pk = :gsi1pk, #gsi1sk = :gsi1sk`,
       ExpressionAttributeNames: {
         '#ownerId': 'ownerId',
         '#ownerName': 'ownerName',
+        '#gsi1pk': Schema.Keys.GSI1PK,
+        '#gsi1sk': Schema.Keys.GSI1SK,
       },
       ExpressionAttributeValues: marshall({
         ':ownerId': ownerId,
         ':ownerName': ownerName,
+        ':gsi1pk': `USERATTACK#${ownerId}`,
+        ':gsi1sk': `${nowString}`,
       }),
       ConditionExpression: 'attribute_not_exists(#ownerId)',
     };

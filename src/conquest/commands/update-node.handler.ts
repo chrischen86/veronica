@@ -1,5 +1,5 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { NodeUpdatedEvent } from '../events/node-updated.event';
+import { NodeUpdatedEvent } from '../../shared/events/node-updated.event';
 import { NodeRepository } from '../../dal/repository/node.repository';
 import UpdateNodeCommand from './update-node.command';
 
@@ -13,7 +13,8 @@ export class UpdateNodeHandler implements ICommandHandler<UpdateNodeCommand> {
   async execute(command: UpdateNodeCommand) {
     console.log('UpdateNodeCommand...');
 
-    const { conquestId, phaseId, zoneId, nodeId, ownerId, status } = command;
+    const { conquestId, phaseId, zoneId, nodeId, ownerId, status, context } =
+      command;
     const node = await this.repository.findOneOnZoneById(
       conquestId,
       phaseId,
@@ -34,6 +35,6 @@ export class UpdateNodeHandler implements ICommandHandler<UpdateNodeCommand> {
       status,
     );
 
-    this.eventBus.publish(new NodeUpdatedEvent(conquestId, nodeId));
+    this.eventBus.publish(new NodeUpdatedEvent(conquestId, nodeId, context));
   }
 }

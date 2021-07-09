@@ -3,5 +3,6 @@ export default class CreateUserCommand {
     public readonly id: string,
     public readonly name: string,
     public readonly allianceId?: string,
+    public readonly allianceName?: string,
   ) {}
 }

@@ -1,7 +1,7 @@
 import { IEventHandler } from '@nestjs/cqrs';
 import { EventsHandler } from '@nestjs/cqrs/dist/decorators/events-handler.decorator';
 import { ConquestService } from '../../conquest/conquest.service';
-import { NodeUpdatedEvent } from '../../conquest/events/node-updated.event';
+import { NodeUpdatedEvent } from '../../shared/events/node-updated.event';
 import { SocketioGateway } from '../socketio.gateway';
 
 @EventsHandler(NodeUpdatedEvent)

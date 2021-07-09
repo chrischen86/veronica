@@ -10,6 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { ConquestService } from '../conquest/conquest.service';
 import { ClearNodeDto } from '../conquest/dtos/clear-node.dto';
 import { RequestNodeDto } from '../conquest/dtos/request-node.dto';
+import { Context } from '../shared/interfaces/context.interface';
 import { SocketIoGuard } from './guards/socketio.guard';
 import { SocketInterceptor } from './interceptors/socket.interceptor';
 import { JoinDto } from './interfaces/join-dto.interface';
@@ -89,13 +90,14 @@ export class SocketioGateway implements OnGatewayConnection {
   @SubscribeMessage('assignNode')
   async handleAssignNode(socket: ConnectedSocket, payload: RequestNodeDto) {
     console.log('AssignNode Message...');
+    const context = this.getSocketContext(socket);
     let isRejected = false;
-    const { userId: ownerId, userName: ownerName } = socket.conn;
+
+    const { ownerId, ownerName } = context;
     payload.ownerId = ownerId;
     payload.ownerName = ownerName;
-
     try {
-      await this.service.requestNode(payload);
+      await this.service.requestNode(payload, context);
     } catch (ex) {
       const { name } = ex;
       if (name === 'ConditionalCheckFailedException') {
@@ -121,7 +123,8 @@ export class SocketioGateway implements OnGatewayConnection {
   @SubscribeMessage('clearNode')
   async handleClearNode(socket: ConnectedSocket, payload: ClearNodeDto) {
     console.log('ClearNode Message...');
-    await this.service.clearNode(payload);
+    const context = this.getSocketContext(socket);
+    await this.service.clearNode(payload, context);
     return {
       status: 'ok',
     };
@@ -183,5 +186,15 @@ export class SocketioGateway implements OnGatewayConnection {
       status: 'ok',
       conquestState,
     };
+  }
+
+  getSocketContext(socket: Socket) {
+    const {
+      userId: ownerId,
+      userName: ownerName,
+      allianceId,
+      allianceName,
+    } = socket.conn;
+    return new Context(ownerId, ownerName, allianceId, allianceName);
   }
 }

@@ -28,7 +28,9 @@ export class CreateAllianceHandler
     };
     await this.repository.create(alliance);
 
-    this.eventBus.publish(new AllianceCreatedEvent(id, ownerId, ownerName));
+    this.eventBus.publish(
+      new AllianceCreatedEvent(id, name, ownerId, ownerName),
+    );
     //Might be better to do this in a transaction or a saga...
     const user: User = {
       id: ownerId,

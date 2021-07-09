@@ -21,21 +21,24 @@ export class UserService {
   }
 
   async createUser(userDto: CreateUserDto) {
-    const { id, name, allianceId } = userDto;
-    return this.commandBus.execute(new CreateUserCommand(id, name, allianceId));
+    const { id, name, allianceId, allianceName } = userDto;
+    return this.commandBus.execute(
+      new CreateUserCommand(id, name, allianceId, allianceName),
+    );
   }
 
   async updateProfile(updateProfileDto: UpdateProfileDto) {
-    const { id, name, allianceId } = updateProfileDto;
+    const { id, name, allianceId, allianceName } = updateProfileDto;
     return this.commandBus.execute(
-      new UpdateProfileCommand(id, name, allianceId),
+      new UpdateProfileCommand(id, name, allianceId, allianceName),
     );
   }
 
   async joinAlliance(dto: JoinAllianceDto) {
-    const { userId, userName, allianceId } = dto;
+    const { userId, userName, allianceId, allianceName } = dto;
+    console.log(dto);
     return this.commandBus.execute(
-      new JoinAllianceCommand(userId, userName, allianceId),
+      new JoinAllianceCommand(userId, userName, allianceId, allianceName),
     );
   }
 }

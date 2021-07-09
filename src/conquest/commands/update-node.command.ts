@@ -1,3 +1,4 @@
+import { Context } from '../../shared/interfaces/context.interface';
 import { NodeStatus } from '../interfaces/conquest.interface';
 
 export default class UpdateNodeCommand {
@@ -8,5 +9,6 @@ export default class UpdateNodeCommand {
     public readonly nodeId: string,
     public readonly status?: NodeStatus,
     public readonly ownerId?: string,
+    public readonly context?: Context,
   ) {}
 }
