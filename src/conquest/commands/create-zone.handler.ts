@@ -21,7 +21,7 @@ export class CreateZoneHandler implements ICommandHandler<CreateZoneCommand> {
       phaseId,
       number: zoneNumber,
       nodes: [],
-      orders: ZoneOrders.Fill,
+      orders: ZoneOrders.Attack,
       status: ZoneStatus.Open,
     };
     await this.repository.create(conquestId, zone);
