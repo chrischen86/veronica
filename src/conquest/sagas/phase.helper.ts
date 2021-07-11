@@ -27,3 +27,9 @@ export const getPhases = (startDate: Date, endDate: Date) => {
 
   return phases;
 };
+
+export const getEndDate = (startDate: Date) => {
+  const endDate = new Date(startDate);
+  endDate.setUTCDate(endDate.getUTCDate() + 4);
+  return endDate;
+};

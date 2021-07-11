@@ -39,7 +39,8 @@ export enum NodeStatus {
 }
 
 export enum ZoneOrders {
-  Fill = 'FILL',
+  Call = 'CALL',
+  Attack = 'ATTACK',
   Finish = 'FINISH',
   Stop = 'STOP',
 }

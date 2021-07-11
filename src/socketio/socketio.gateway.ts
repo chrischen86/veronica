@@ -1,7 +1,9 @@
 import { UseGuards, UseInterceptors } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -11,6 +13,7 @@ import { ConquestService } from '../conquest/conquest.service';
 import { ClearNodeDto } from '../conquest/dtos/clear-node.dto';
 import { RequestNodeDto } from '../conquest/dtos/request-node.dto';
 import { Context } from '../shared/interfaces/context.interface';
+import { RoomParticipantsUpdatedEvent } from './events/room-participants-updated.event';
 import { SocketIoGuard } from './guards/socketio.guard';
 import { SocketInterceptor } from './interceptors/socket.interceptor';
 import { JoinDto } from './interfaces/join-dto.interface';
@@ -24,14 +27,25 @@ import { ConnectedSocket } from './types';
 @UseGuards(SocketIoGuard)
 @UseInterceptors(SocketInterceptor)
 @WebSocketGateway()
-export class SocketioGateway implements OnGatewayConnection {
+export class SocketioGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
   constructor(
     private readonly service: ConquestService,
     private readonly jwtService: JwtService,
+    private readonly eventBus: EventBus,
   ) {}
+
+  async handleDisconnect(socket: Socket) {
+    console.log('Disconnecting');
+    const roomNumber = socket.data.roomNumber;
+    if (roomNumber !== undefined) {
+      this.eventBus.publish(new RoomParticipantsUpdatedEvent(roomNumber));
+    }
+  }
 
   async handleConnection(socket: Socket, ...args: any[]) {
     const authorized = await SocketIoGuard.verifyToken(
@@ -60,7 +74,8 @@ export class SocketioGateway implements OnGatewayConnection {
 
     console.log(`joining ${roomNumber}`);
     socket.join(roomNumber);
-
+    socket.data.roomNumber = roomNumber;
+    this.eventBus.publish(new RoomParticipantsUpdatedEvent(roomNumber));
     return {
       status: 'ok',
       conquestState: conquest,
@@ -70,7 +85,6 @@ export class SocketioGateway implements OnGatewayConnection {
   @SubscribeMessage('setupZone')
   async handleSetupZone(socket: ConnectedSocket, payload: SetupZoneDto) {
     console.log('SetupZoneMessage...');
-    console.log(socket.conn.userId);
     const { conquestId, phaseId, holds, zone } = payload;
 
     // const conquest = await this.service.findOneConquest(conquestId);
@@ -90,6 +104,7 @@ export class SocketioGateway implements OnGatewayConnection {
   @SubscribeMessage('assignNode')
   async handleAssignNode(socket: ConnectedSocket, payload: RequestNodeDto) {
     console.log('AssignNode Message...');
+
     const context = this.getSocketContext(socket);
     let isRejected = false;
 
@@ -182,6 +197,8 @@ export class SocketioGateway implements OnGatewayConnection {
     }
 
     socket.join(conquestId);
+    socket.data.roomNumber = conquestId;
+    this.eventBus.publish(new RoomParticipantsUpdatedEvent(conquestId));
     return {
       status: 'ok',
       conquestState,

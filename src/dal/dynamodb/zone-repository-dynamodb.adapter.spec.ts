@@ -18,7 +18,7 @@ export const createZone = (
   id,
   phaseId,
   number,
-  orders = ZoneOrders.Fill,
+  orders = ZoneOrders.Attack,
   status = ZoneStatus.Open,
 ): Zone => {
   return {
@@ -147,7 +147,7 @@ xdescribe('ZoneRepositoryDynamoDbAdapter', () => {
       conquestId,
       phaseId,
       zoneId: id,
-      orders: ZoneOrders.Fill,
+      orders: ZoneOrders.Attack,
       status: ZoneStatus.Sealing,
     };
     await service.update(zoneUpdate);
@@ -157,7 +157,7 @@ xdescribe('ZoneRepositoryDynamoDbAdapter', () => {
       id,
     );
     expect(updatedZone).not.toBeNull();
-    expect(updatedZone.orders).toEqual(ZoneOrders.Fill);
+    expect(updatedZone.orders).toEqual(ZoneOrders.Attack);
     expect(updatedZone.status).toEqual(ZoneStatus.Sealing);
   });
 });

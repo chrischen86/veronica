@@ -46,5 +46,8 @@ export class SocketInterceptor implements NestInterceptor {
     socket.conn.userName = user.name;
     socket.conn.allianceId = user.allianceId;
     socket.conn.allianceName = user.allianceName;
+
+    socket.data.userId = userId;
+    socket.data.userName = user.name;
   }
 }
