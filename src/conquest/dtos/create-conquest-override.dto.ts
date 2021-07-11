@@ -1,7 +1,7 @@
 import { IsString, IsDate } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class CreateConquestDto {
+export class CreateConquestOverrideDto {
   @Type(() => Date)
   @IsDate()
   startDate: Date;

@@ -30,6 +30,7 @@ import { ListConquestQuery } from './queries/list-conquest.query';
 import { ListNodesQuery } from './queries/list-nodes.query';
 import { ListPhasesQuery } from './queries/list-phases.query';
 import { ListZonesQuery } from './queries/list-zones.query';
+import { getEndDate } from './sagas/phase.helper';
 
 @Injectable()
 export class ConquestService {
@@ -48,7 +49,18 @@ export class ConquestService {
     return this.queryBus.execute(new GetConquestQuery(conquestId));
   }
 
-  async createConquest(allianceId: string, startDate: Date, endDate: Date) {
+  async createConquest(allianceId: string, startDate: Date) {
+    const endDate = getEndDate(startDate);
+    return this.commandBus.execute(
+      new SetupConquestCommand(allianceId, startDate, endDate),
+    );
+  }
+
+  async createConquestOverride(
+    allianceId: string,
+    startDate: Date,
+    endDate: Date,
+  ) {
     return this.commandBus.execute(
       new SetupConquestCommand(allianceId, startDate, endDate),
     );

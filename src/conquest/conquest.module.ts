@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { AuthModule } from '../auth/auth.module';
 import { DalModule } from '../dal/dal.module';
 import { CommandHandlers } from './commands';
 import { ConquestController } from './conquest.controller';
@@ -12,7 +13,7 @@ import { ConquestSagas } from './sagas/conquest.sagas';
 import { ZoneController } from './zone.controller';
 
 @Module({
-  imports: [CqrsModule, DalModule],
+  imports: [CqrsModule, DalModule, AuthModule],
   exports: [ConquestService],
   controllers: [
     ConquestController,
