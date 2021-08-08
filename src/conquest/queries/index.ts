@@ -6,6 +6,7 @@ import { GetZoneHandler } from './get-zone.handler';
 import { ListZonesHandler } from './list-zones.handler';
 import { GetNodeHandler } from './get-node.handler';
 import { ListNodesHandler } from './list-nodes.handler';
+import { GetActiveConquestHandler } from './get-active-conquest.handler';
 
 export const QueryHandlers = [
   GetConquestHandler,
@@ -16,4 +17,5 @@ export const QueryHandlers = [
   ListZonesHandler,
   GetNodeHandler,
   ListNodesHandler,
+  GetActiveConquestHandler,
 ];

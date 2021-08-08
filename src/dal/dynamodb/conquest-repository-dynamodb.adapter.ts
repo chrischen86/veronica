@@ -8,6 +8,7 @@ import {
 } from '@aws-sdk/client-dynamodb';
 import { Injectable } from '@nestjs/common';
 import { Conquest } from '../../conquest/interfaces/conquest.interface';
+import { ConquestEntity } from '../entities/conquest.entity';
 import { ConquestRepository } from '../repository/conquest.repository';
 import { parseConquest } from './conquests-items.parser';
 import { DynamoDbService } from './dynamodb.service';
@@ -48,7 +49,7 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
         ':pk': { S: `AC#${allianceId}` },
       },
       ExpressionAttributeNames: {
-        '#gsi1pk': Schema.Keys.GSI2PK,
+        '#gsi1pk': Schema.Keys.GSI1PK,
       },
       ScanIndexForward: false,
       TableName: Schema.Table.Name,
@@ -56,6 +57,33 @@ export class ConquestRepositoryDynamoDbAdapter extends ConquestRepository {
 
     const conquests = await this.service.client.send(new QueryCommand(params));
     const conquestsList = parseConquest(conquests.Items);
+    return conquestsList;
+  }
+
+  async findByQuery(
+    allianceId: string,
+    start: string,
+    end: string,
+  ): Promise<Conquest[]> {
+    const params: QueryCommandInput = {
+      IndexName: Schema.Indexes.GSI1,
+      KeyConditionExpression:
+        '#gsi1pk = :pk and #gsi1sk between :start and :end',
+      ExpressionAttributeValues: {
+        ':pk': { S: `AC#${allianceId}` },
+        ':start': { S: start },
+        ':end': { S: end },
+      },
+      ExpressionAttributeNames: {
+        '#gsi1pk': Schema.Keys.GSI1PK,
+        '#gsi1sk': Schema.Keys.GSI1SK,
+      },
+      ScanIndexForward: false,
+      TableName: Schema.Table.Name,
+    };
+
+    const conquests = await this.service.client.send(new QueryCommand(params));
+    const conquestsList = conquests.Items.map((i) => new ConquestEntity(i));
     return conquestsList;
   }
 

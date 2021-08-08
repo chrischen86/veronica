@@ -1,4 +1,4 @@
-export interface Conquest {
+export class Conquest {
   id: string;
   allianceId: string;
   startDate: Date;

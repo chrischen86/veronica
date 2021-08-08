@@ -22,6 +22,7 @@ import {
   ZoneOrders,
   ZoneStatus,
 } from './interfaces/conquest.interface';
+import { GetActiveConquestQuery } from './queries/get-active-conquest.query';
 import { GetConquestQuery } from './queries/get-conquest.query';
 import { GetNodeQuery } from './queries/get-node.query';
 import { GetPhasesQuery } from './queries/get-phase.query';
@@ -42,6 +43,12 @@ export class ConquestService {
   //CONQUEST METHODS
   async findAllConquest(): Promise<Conquest[]> {
     return this.queryBus.execute(new ListConquestQuery());
+  }
+
+  findActiveConquest(allianceId: string, start: string, end: string) {
+    return this.queryBus.execute(
+      new GetActiveConquestQuery(allianceId, start, end),
+    );
   }
 
   async findOneConquest(conquestId: string): Promise<Conquest> {

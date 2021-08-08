@@ -6,4 +6,10 @@ export abstract class ConquestRepository {
   abstract findOneById(id: string): Promise<Conquest>;
   abstract create(conquest: Conquest): Promise<Conquest>;
   abstract delete(conquestId: string);
+
+  abstract findByQuery(
+    allianceId: string,
+    start: string,
+    end: string,
+  ): Promise<Conquest[]>;
 }
